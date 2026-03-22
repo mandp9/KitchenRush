@@ -1,0 +1,46 @@
+using UnityEngine;
+using UnityEngine.AI;
+
+public class NPCClient : MonoBehaviour
+{
+    public Transform destino;
+    private NavMeshAgent agent;
+    private Animator anim;
+    private bool haLlegado = false;
+
+    void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        anim = GetComponentInChildren<Animator>();
+
+        agent.SetDestination(destino.position);
+    }
+
+    void Update()
+    {
+        if (!haLlegado)
+        {
+            if (agent.velocity.magnitude > 0.1f)
+            {
+                anim.SetBool("isWalking", true);
+            }
+            else
+            {
+                anim.SetBool("isWalking", false);
+            }
+
+            if (!agent.pathPending && agent.remainingDistance < 0.5f)
+            {
+                haLlegado = true;
+                anim.SetBool("isWalking", false);
+                Pedir();
+            }
+        }
+    }
+
+    void Pedir()
+    {
+        Debug.Log("Quiero comida 🍔");
+    }
+  
+}
