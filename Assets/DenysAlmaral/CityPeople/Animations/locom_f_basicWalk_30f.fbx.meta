@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: a9ce97152abb7fc41ae2a29525434851
+AssetOrigin:
+  serializedVersion: 1
+  productId: 260446
+  packageName: City People FREE Samples
+  packageVersion: 1.2.0
+  assetPath: Assets/DenysAlmaral/CityPeople/Animations/locom_f_basicWalk_30f.fbx
+  uploadId: 833900
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -16,8 +23,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -561,8 +566,7 @@ ModelImporter:
     hasTranslationDoF: 1
     hasExtraRoot: 1
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 89e4b9e31fc9ace45a9164e797eb041b,
-    type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 89e4b9e31fc9ace45a9164e797eb041b, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
@@ -574,10 +578,3 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 260446
-  packageName: City People FREE Samples
-  packageVersion: 1.2.0
-  assetPath: Assets/DenysAlmaral/CityPeople/Animations/locom_f_basicWalk_30f.fbx
-  uploadId: 833900

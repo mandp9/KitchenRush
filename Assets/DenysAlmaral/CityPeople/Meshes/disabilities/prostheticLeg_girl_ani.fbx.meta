@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: 5c84b49838c1acd4cbe63ecc028d64fe
+AssetOrigin:
+  serializedVersion: 1
+  productId: 260446
+  packageName: City People FREE Samples
+  packageVersion: 1.2.0
+  assetPath: Assets/DenysAlmaral/CityPeople/Meshes/disabilities/prostheticLeg_girl_ani.fbx
+  uploadId: 833900
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -21,8 +28,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -44,13 +49,13 @@ ModelImporter:
       firstFrame: 0
       lastFrame: 299
       wrapMode: 0
-      orientationOffsetY: 0
+      orientationOffsetY: 1
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 1
-      loopBlend: 0
+      loopBlend: 1
       loopBlendOrientation: 1
       loopBlendPositionY: 1
       loopBlendPositionXZ: 1
@@ -641,10 +646,3 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 260446
-  packageName: City People FREE Samples
-  packageVersion: 1.2.0
-  assetPath: Assets/DenysAlmaral/CityPeople/Meshes/disabilities/prostheticLeg_girl_ani.fbx
-  uploadId: 833900
