@@ -8,12 +8,18 @@ public class NPCClient : MonoBehaviour
     private Animator anim;
     private bool haLlegado = false;
 
+    public float pacienciaMax = 10f;
+    private float pacienciaActual;
+    private bool esperando = false;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponentInChildren<Animator>();
 
         agent.SetDestination(destino.position);
+
+        pacienciaActual = pacienciaMax;
     }
 
     void Update()
@@ -37,11 +43,29 @@ public class NPCClient : MonoBehaviour
                 Pedir();
             }
         }
+
+        if (esperando)
+        {
+            pacienciaActual -= Time.deltaTime;
+
+            if(pacienciaActual <= 0f)
+            {
+                Irse();
+            }
+        }
     }
 
     void Pedir()
     {
         Debug.Log("Quiero comida");
+        esperando = true;
+    }
+
+    void Irse()
+    {
+        Debug.Log("Me canse de esperar");
+        esperando = false;
+        Destroy(gameObject);
     }
   
 }
