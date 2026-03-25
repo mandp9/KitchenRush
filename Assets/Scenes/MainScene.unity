@@ -1661,15 +1661,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.7
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.7
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.7
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1677,7 +1677,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.246
+      value: 1.258
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1718,6 +1718,18 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
       propertyPath: m_TagString
       value: Interactable
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143408144790162409, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143408144790162409, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143408144790162409, guid: 8f44a303c6e993b4f956b6349789bd35, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1921,8 +1933,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.06, y: 0.28203017, z: 0.12}
+  m_Center: {x: 0, y: 0.13398495, z: 0}
 --- !u!54 &700450150
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2692,6 +2704,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destino: {fileID: 1505302078}
   pacienciaMax: 10
+  efectoHumo: {fileID: 104829970813648393, guid: d3015b7eea383f64d8b81f965cc466e7, type: 3}
 --- !u!1001 &1293766371
 PrefabInstance:
   m_ObjectHideFlags: 0

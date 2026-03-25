@@ -8,11 +8,11 @@ public class NPCClient : MonoBehaviour
     private Animator anim;
     private bool haLlegado = false;
 
-    public float pacienciaMax = 30f;
+    public float pacienciaMax = 60f;
     private float pacienciaActual;
     private bool esperando = false;
     private EstadoPaciencia estadoActual;
-
+    public GameObject efectoHumo;
 
     enum EstadoPaciencia
     {
@@ -58,6 +58,9 @@ public class NPCClient : MonoBehaviour
         if (esperando)
         {
             pacienciaActual -= Time.deltaTime;
+
+            if (pacienciaActual < 0f)
+                pacienciaActual = 0f;
             EvaluarPaciencia();
         }
     }
@@ -71,6 +74,8 @@ public class NPCClient : MonoBehaviour
     void Irse()
     {
         esperando = false;
+        GameObject humo = Instantiate(efectoHumo, anim.transform.position, Quaternion.identity);
+        Destroy(humo, 0.5f);
         Destroy(gameObject);
     }
 
@@ -78,14 +83,16 @@ public class NPCClient : MonoBehaviour
     {
         float porcentaje = pacienciaActual / pacienciaMax;
 
-        if (porcentaje <= 0f)
+        if (pacienciaActual <= 0f)
         {
             CambiarEstado(EstadoPaciencia.Harto);
         }
-        else if(porcentaje<=0.5f){
+        else if (porcentaje <= 0.5f)
+        {
             CambiarEstado(EstadoPaciencia.Desesperado);
         }
-        else{
+        else
+        {
             CambiarEstado(EstadoPaciencia.Tranquilo);
         }
 
