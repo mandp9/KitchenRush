@@ -8,9 +8,20 @@ public class NPCClient : MonoBehaviour
     private Animator anim;
     private bool haLlegado = false;
 
-    public float pacienciaMax = 10f;
+    public float pacienciaMax = 30f;
     private float pacienciaActual;
     private bool esperando = false;
+    private EstadoPaciencia estadoActual;
+
+
+    enum EstadoPaciencia
+    {
+        Tranquilo,
+        Desesperado,
+        Harto
+    }
+
+
 
     void Start()
     {
@@ -47,11 +58,7 @@ public class NPCClient : MonoBehaviour
         if (esperando)
         {
             pacienciaActual -= Time.deltaTime;
-
-            if(pacienciaActual <= 0f)
-            {
-                Irse();
-            }
+            EvaluarPaciencia();
         }
     }
 
@@ -63,9 +70,49 @@ public class NPCClient : MonoBehaviour
 
     void Irse()
     {
-        Debug.Log("Me canse de esperar");
         esperando = false;
         Destroy(gameObject);
     }
-  
+
+    void EvaluarPaciencia()
+    {
+        float porcentaje = pacienciaActual / pacienciaMax;
+
+        if (porcentaje <= 0f)
+        {
+            CambiarEstado(EstadoPaciencia.Harto);
+        }
+        else if(porcentaje<=0.5f){
+            CambiarEstado(EstadoPaciencia.Desesperado);
+        }
+        else{
+            CambiarEstado(EstadoPaciencia.Tranquilo);
+        }
+
+    }
+
+    void CambiarEstado(EstadoPaciencia nuevoEstado)
+    {
+        if (estadoActual == nuevoEstado) return;
+
+        estadoActual = nuevoEstado;
+
+        switch (estadoActual)
+        {
+            case EstadoPaciencia.Tranquilo:
+                Debug.Log("Esperare");
+                break;
+
+            case EstadoPaciencia.Desesperado:
+                Debug.Log("Me estoy desesperando");
+                anim.speed = 2.0f;
+                break;
+
+            case EstadoPaciencia.Harto:
+                Debug.Log("Estoy harto de esperar");
+                Irse();
+                break;
+        }
+    }
+
 }
