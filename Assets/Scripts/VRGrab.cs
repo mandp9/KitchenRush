@@ -13,28 +13,43 @@ public class VRGrab : MonoBehaviour
 
     void Update()
     {
-        // VR
-        if (grabAction.GetStateDown(handType))
+        if (grabAction != null && grabAction.GetStateDown(handType))
         {
-            if (heldObject == null)
-                TryGrab();
-            else
-                Drop();
+            ToggleGrab();
         }
 
-        // Teclado
         if (Input.GetKeyDown(KeyCode.F))
         {
-            if (heldObject == null)
-                TryGrab();
-            else
-                Drop();
+            ToggleGrab();
         }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            ToggleGrab();
+        }
+    }
+
+    void ToggleGrab()
+    {
+        if (heldObject == null)
+            TryGrab();
+        else
+            Drop();
     }
 
     void TryGrab()
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        Ray ray;
+
+        if (Camera.main != null)
+        {
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        }
+        else
+        {
+            ray = new Ray(transform.position, transform.forward);
+        }
+
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, grabDistance))
@@ -45,12 +60,14 @@ public class VRGrab : MonoBehaviour
 
                 Rigidbody rb = heldObject.GetComponent<Rigidbody>();
 
-                // 🔥 Estado: en mano
-                rb.isKinematic = true;
-                rb.useGravity = false;
+                if (rb != null)
+                {
+                    rb.isKinematic = true;
+                    rb.useGravity = false;
+                }
 
                 heldObject.transform.SetParent(holdPoint);
-                heldObject.transform.localPosition = Vector3.zero;
+                heldObject.transform.localPosition = new Vector3(0, -0.1f, 0.4f);
                 heldObject.transform.localRotation = Quaternion.identity;
             }
         }
@@ -58,14 +75,17 @@ public class VRGrab : MonoBehaviour
 
     void Drop()
     {
+        if (heldObject == null) return;
+
         Rigidbody rb = heldObject.GetComponent<Rigidbody>();
 
-        // 🔥 Estado: física activa
-        rb.isKinematic = false;
-        rb.useGravity = true;
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+            rb.useGravity = true;
+        }
 
         heldObject.transform.SetParent(null);
-
         heldObject = null;
     }
 }

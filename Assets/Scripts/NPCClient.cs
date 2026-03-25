@@ -29,7 +29,8 @@ public class NPCClient : MonoBehaviour
                 anim.SetBool("isWalking", false);
             }
 
-            if (!agent.pathPending && agent.remainingDistance < 0.5f)
+            if (!agent.pathPending &&
+            agent.remainingDistance <= agent.stoppingDistance)
             {
                 haLlegado = true;
                 anim.SetBool("isWalking", false);
@@ -40,7 +41,7 @@ public class NPCClient : MonoBehaviour
 
     void Pedir()
     {
-        Debug.Log("Quiero comida 🍔");
+        Debug.Log("Quiero comida");
     }
   
 }
