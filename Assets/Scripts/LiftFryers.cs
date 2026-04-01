@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class LiftFryers : MonoBehaviour
 {
-    public float downY = -0.3f;
+    public float downY = -0.05f;
     public float speed = 2f;
 
     private Vector3 startPos;

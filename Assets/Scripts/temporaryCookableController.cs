@@ -28,11 +28,15 @@ public class temporaryCookableController : MonoBehaviour
     private Renderer rend;
     private CookState lastState;
 
+    public ParticleSystem smoke;
+
     void Start()
     {
         rend = GetComponent<Renderer>();
         lastState = currentState;
         UpdateMaterial();
+        if (smoke != null)
+            smoke.Stop();
     }
 
     void OnTriggerStay(Collider other)
@@ -58,6 +62,18 @@ public class temporaryCookableController : MonoBehaviour
         if (currentState != lastState)
         {
             UpdateMaterial();
+
+            if (currentState == CookState.Burnt)
+            {
+                if (smoke != null && !smoke.isPlaying)
+                    smoke.Play();
+            }
+            else
+            {
+                if (smoke != null && smoke.isPlaying)
+                    smoke.Stop();
+            }
+
             lastState = currentState;
         }
     }
