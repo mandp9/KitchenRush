@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
 public class NPCClient : MonoBehaviour
 {
@@ -8,10 +9,19 @@ public class NPCClient : MonoBehaviour
     private Animator anim;
     private bool haLlegado = false;
 
-    public float pacienciaMax = 60f;
+    [Header("Paciencia")]
+    public float delayAntesDeEsperar = 8f;
+    private float timerInicio = 0f;
+
+    public float pacienciaMax = 180f;
     private float pacienciaActual;
     private bool esperando = false;
     private EstadoPaciencia estadoActual;
+
+    [Header("Pedido")]
+    public Order currentOrder;
+
+    [Header("Efectos")]
     public GameObject efectoHumo;
 
     enum EstadoPaciencia
@@ -57,20 +67,84 @@ public class NPCClient : MonoBehaviour
 
         if (esperando)
         {
-            pacienciaActual -= Time.deltaTime;
+            timerInicio += Time.deltaTime;
 
-            if (pacienciaActual < 0f)
-                pacienciaActual = 0f;
-            EvaluarPaciencia();
+            if (timerInicio >= delayAntesDeEsperar)
+            {
+                pacienciaActual -= Time.deltaTime;
+
+                if (pacienciaActual < 0f)
+                    pacienciaActual = 0f;
+
+                EvaluarPaciencia();
+            }
         }
     }
+
 
     void Pedir()
     {
         Debug.Log("Quiero comida");
+
+        timerInicio = 0f;
+        pacienciaActual = pacienciaMax;
+
+        currentOrder = new Order();
+        currentOrder.requiredCookState = CookState.Rare;
+
+        currentOrder.requiredIngredients = new List<IngredientType>()
+        {
+            IngredientType.TopBread,
+            IngredientType.BaseBread,
+            IngredientType.Lettuce,
+            IngredientType.Onion
+        };
+
+        Debug.Log("Pedido: Rare + Bread + Lettuce + Onion");
+
         esperando = true;
     }
 
+    public void RecibirBurger(Burger burger)
+    {
+        if (EsPedidoCorrecto(burger))
+        {
+            Debug.Log("Pedido correcto");
+            Destroy(gameObject);
+        }
+        else
+        {
+            Debug.Log("Pedido incorrecto");
+            Irse();
+        }
+    }
+    bool EsPedidoCorrecto(Burger burger)
+    {
+        if (burger.cookState != currentOrder.requiredCookState)
+            return false;
+
+        foreach (IngredientType ing in currentOrder.requiredIngredients)
+        {
+            if (!burger.ingredients.Contains(ing))
+                return false;
+        }
+
+        if (burger.ingredients.Count != currentOrder.requiredIngredients.Count)
+            return false;
+
+        return true;
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if (!esperando) return;
+
+        Burger burger = other.GetComponent<Burger>();
+
+        if (burger != null && burger.ingredients.Count > 0)
+        {
+            RecibirBurger(burger);
+        }
+    }
     void Irse()
     {
         esperando = false;
@@ -87,7 +161,7 @@ public class NPCClient : MonoBehaviour
         {
             CambiarEstado(EstadoPaciencia.Harto);
         }
-        else if (porcentaje <= 0.5f)
+        else if (porcentaje <= 0.25f) 
         {
             CambiarEstado(EstadoPaciencia.Desesperado);
         }
@@ -95,7 +169,6 @@ public class NPCClient : MonoBehaviour
         {
             CambiarEstado(EstadoPaciencia.Tranquilo);
         }
-
     }
 
     void CambiarEstado(EstadoPaciencia nuevoEstado)
@@ -107,19 +180,20 @@ public class NPCClient : MonoBehaviour
         switch (estadoActual)
         {
             case EstadoPaciencia.Tranquilo:
-                Debug.Log("Esperare");
+                Debug.Log("Im waiting");
                 break;
 
             case EstadoPaciencia.Desesperado:
-                Debug.Log("Me estoy desesperando");
+                Debug.Log("Getting mad...");
                 anim.speed = 2.0f;
                 break;
 
             case EstadoPaciencia.Harto:
-                Debug.Log("Estoy harto de esperar");
+                Debug.Log("Im fed up of waiting");
                 Irse();
                 break;
         }
     }
+
 
 }

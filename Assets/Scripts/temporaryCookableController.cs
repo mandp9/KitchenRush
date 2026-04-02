@@ -21,30 +21,52 @@ public class temporaryCookableController : MonoBehaviour
     public Material burntMat;
 
     [Header("Cooking Times")]
-    public float rareTime = 2f;
-    public float wellDoneTime = 6f;
-    public float burntTime = 10f;
+    public float rareTime = 8f;
+    public float wellDoneTime = 18f;
+    public float burntTime = 30f;
 
     private Renderer rend;
     private CookState lastState;
 
     public ParticleSystem smoke;
 
+    private bool isCooking = false; 
+
     void Start()
     {
         rend = GetComponent<Renderer>();
         lastState = currentState;
         UpdateMaterial();
+
         if (smoke != null)
             smoke.Stop();
     }
 
-    void OnTriggerStay(Collider other)
+    void Update()
     {
-        if (other.CompareTag("Cooker"))
+        if (isCooking)
         {
             cookTime += Time.deltaTime;
             UpdateState();
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Cooker"))
+        {
+            isCooking = true;
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Cooker"))
+        {
+            isCooking = false;
+
+            if (smoke != null && smoke.isPlaying)
+                smoke.Stop();
         }
     }
 
@@ -63,7 +85,7 @@ public class temporaryCookableController : MonoBehaviour
         {
             UpdateMaterial();
 
-            if (currentState == CookState.Burnt)
+            if (currentState == CookState.Burnt && isCooking)
             {
                 if (smoke != null && !smoke.isPlaying)
                     smoke.Play();
