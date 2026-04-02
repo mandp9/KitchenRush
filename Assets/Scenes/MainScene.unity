@@ -448,6 +448,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
+  isPlaced: 0
 --- !u!1001 &156545426
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -600,6 +601,10 @@ PrefabInstance:
     - target: {fileID: 6813416509558619124, guid: 3b7f2c753d435d647a80f1f047a113e3, type: 3}
       propertyPath: m_Name
       value: msVFX_Stylized Smoke 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6813416509558619124, guid: 3b7f2c753d435d647a80f1f047a113e3, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -819,6 +824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   burgerPrefab: {fileID: 540357747591534175, guid: 934b64cd38c54c244899fadb57b440c1, type: 3}
   spawnPoint: {fileID: 2053484194}
+  heightStep: 0.05
 --- !u!65 &224797086
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1774,7 +1780,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ffae5b3e44dfe648a01a436f5b7e280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 2
+  type: 0
+  isPlaced: 0
 --- !u!1001 &527742318
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3674,6 +3681,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: msVFX_Stylized Smoke 4
       objectReference: {fileID: 0}
+    - target: {fileID: 6813416509558619124, guid: 3b7f2c753d435d647a80f1f047a113e3, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4142,6 +4153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
+  isPlaced: 0
 --- !u!1001 &1138655066
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4209,6 +4221,10 @@ PrefabInstance:
     - target: {fileID: 6813416509558619124, guid: 3b7f2c753d435d647a80f1f047a113e3, type: 3}
       propertyPath: m_Name
       value: msVFX_Stylized Smoke 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6813416509558619124, guid: 3b7f2c753d435d647a80f1f047a113e3, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5726,6 +5742,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
+  isPlaced: 0
 --- !u!65 &1410975557
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6154,6 +6171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
+  isPlaced: 0
 --- !u!114 &1486264290
 MonoBehaviour:
   m_ObjectHideFlags: 0

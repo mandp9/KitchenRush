@@ -7,10 +7,15 @@ public class BurgerBuilder : MonoBehaviour
 
     private Burger currentBurger;
 
+    private float currentHeight = 0f;
+    public float heightStep = 0.05f;
+
     public void CreateBurger()
     {
         GameObject burgerObj = Instantiate(burgerPrefab, spawnPoint.position, Quaternion.identity);
         currentBurger = burgerObj.GetComponent<Burger>();
+
+        currentHeight = 0f;
 
         Debug.Log("Burger creada");
     }
@@ -21,7 +26,16 @@ public class BurgerBuilder : MonoBehaviour
 
         currentBurger.AddIngredient(ingredient);
 
-        // 🔥 DESACTIVAR FÍSICA COMPLETAMENTE
+        // 🔥 OBTENER COLLIDER
+        Collider col = ingredient.GetComponent<Collider>();
+        float height = heightStep;
+
+        if (col != null)
+        {
+            height = col.bounds.size.y;
+        }
+
+        // 🔥 DESACTIVAR FÍSICA
         Rigidbody rb = ingredient.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -31,16 +45,23 @@ public class BurgerBuilder : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        // 🔥 DESACTIVAR COLLISIONES
-        Collider col = ingredient.GetComponent<Collider>();
+        // 🔥 HACER HIJO Y POSICIONAR (STACKING)
+        ingredient.transform.SetParent(currentBurger.transform);
+
+        Vector3 localPos = new Vector3(0, currentHeight, 0);
+        ingredient.transform.localPosition = localPos;
+
+        // 🔥 RESET ROTACIÓN
+        ingredient.transform.localRotation = Quaternion.identity;
+
+        // 🔥 DESACTIVAR COLLIDER (después de calcular altura)
         if (col != null)
         {
             col.enabled = false;
         }
 
-        // 🔥 MOVER Y PARENT
-        ingredient.transform.position = spawnPoint.position;
-        ingredient.transform.SetParent(currentBurger.transform);
+        // 🔥 AUMENTAR ALTURA
+        currentHeight += height;
 
         // 🔥 SI ES CARNE → GUARDAR COCCIÓN
         temporaryCookableController meat = ingredient.GetComponent<temporaryCookableController>();
@@ -52,21 +73,22 @@ public class BurgerBuilder : MonoBehaviour
         Debug.Log("Ingrediente añadido: " + ingredient.type);
     }
 
-    void OnTriggerEnter(Collider other)
+    void OnTriggerStay(Collider other)
     {
         Ingredient ingredient = other.GetComponent<Ingredient>();
 
-        if (ingredient != null)
+        if (ingredient != null && !ingredient.isPlaced)
         {
             Debug.Log("Entró en trigger: " + ingredient.name);
 
-            // 🔥 CREAR BURGER SI NO EXISTE
             if (currentBurger == null)
             {
                 CreateBurger();
             }
 
             AddIngredient(ingredient);
+
+            ingredient.isPlaced = true;
         }
     }
 }

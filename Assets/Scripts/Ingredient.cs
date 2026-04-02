@@ -2,15 +2,19 @@ using UnityEngine;
 
 public enum IngredientType
 {
-    TopBread,
-    BaseBread,
     Meat,
     Lettuce,
     Tomato,
     Onion,
-    Cheese
+    Cheese,
+    BaseBread,
+    TopBread
 }
+
 public class Ingredient : MonoBehaviour
 {
     public IngredientType type;
+
+    [HideInInspector]
+    public bool isPlaced = false;
 }
