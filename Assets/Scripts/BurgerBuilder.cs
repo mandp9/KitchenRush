@@ -26,7 +26,6 @@ public class BurgerBuilder : MonoBehaviour
 
         currentBurger.AddIngredient(ingredient);
 
-        // 🔥 OBTENER COLLIDER
         Collider col = ingredient.GetComponent<Collider>();
         float height = heightStep;
 
@@ -35,7 +34,6 @@ public class BurgerBuilder : MonoBehaviour
             height = col.bounds.size.y;
         }
 
-        // 🔥 DESACTIVAR FÍSICA
         Rigidbody rb = ingredient.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -45,25 +43,20 @@ public class BurgerBuilder : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        // 🔥 HACER HIJO Y POSICIONAR (STACKING)
+        // 🔥 Parent + posición local (STACKING)
         ingredient.transform.SetParent(currentBurger.transform);
-
-        Vector3 localPos = new Vector3(0, currentHeight, 0);
-        ingredient.transform.localPosition = localPos;
-
-        // 🔥 RESET ROTACIÓN
+        ingredient.transform.localPosition = new Vector3(0, currentHeight, 0);
         ingredient.transform.localRotation = Quaternion.identity;
 
-        // 🔥 DESACTIVAR COLLIDER (después de calcular altura)
+        // 🔥 Desactivar collider después
         if (col != null)
         {
             col.enabled = false;
         }
 
-        // 🔥 AUMENTAR ALTURA
         currentHeight += height;
 
-        // 🔥 SI ES CARNE → GUARDAR COCCIÓN
+        // 🔥 Guardar cocción
         temporaryCookableController meat = ingredient.GetComponent<temporaryCookableController>();
         if (meat != null)
         {
@@ -73,13 +66,13 @@ public class BurgerBuilder : MonoBehaviour
         Debug.Log("Ingrediente añadido: " + ingredient.type);
     }
 
-    void OnTriggerStay(Collider other)
+    void OnCollisionStay(Collision collision)
     {
-        Ingredient ingredient = other.GetComponent<Ingredient>();
+        Ingredient ingredient = collision.gameObject.GetComponent<Ingredient>();
 
         if (ingredient != null && !ingredient.isPlaced)
         {
-            Debug.Log("Entró en trigger: " + ingredient.name);
+            Debug.Log("Colisión con: " + ingredient.name);
 
             if (currentBurger == null)
             {
@@ -89,6 +82,16 @@ public class BurgerBuilder : MonoBehaviour
             AddIngredient(ingredient);
 
             ingredient.isPlaced = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        Ingredient ingredient = collision.gameObject.GetComponent<Ingredient>();
+
+        if (ingredient != null)
+        {
+            Debug.Log("Salió de la tabla: " + ingredient.name);
         }
     }
 }
