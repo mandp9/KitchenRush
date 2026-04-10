@@ -25,6 +25,10 @@ public class temporaryCookableController : MonoBehaviour
     public float wellDoneTime = 18f;
     public float burntTime = 30f;
 
+    [Header("Sound Effects")]
+    public AudioSource cookingSound;
+    public AudioSource burntSound;
+
     private Renderer rend;
     private CookState lastState;
 
@@ -56,6 +60,7 @@ public class temporaryCookableController : MonoBehaviour
         if (other.CompareTag("Cooker"))
         {
             isCooking = true;
+            cookingSound.Play();
         }
     }
 
@@ -64,6 +69,7 @@ public class temporaryCookableController : MonoBehaviour
         if (other.CompareTag("Cooker"))
         {
             isCooking = false;
+            cookingSound.Stop();
 
             if (smoke != null && smoke.isPlaying)
                 smoke.Stop();
@@ -73,13 +79,24 @@ public class temporaryCookableController : MonoBehaviour
     void UpdateState()
     {
         if (cookTime >= burntTime)
+        {
             currentState = CookState.Burnt;
+            cookingSound.volume = 0.2f;
+        }
         else if (cookTime >= wellDoneTime)
+        {
             currentState = CookState.WellDone;
+            cookingSound.volume = 0.3f;
+        }
         else if (cookTime >= rareTime)
+        {
             currentState = CookState.Rare;
-        else
+            cookingSound.volume = 0.4f;
+        }
+        else {
             currentState = CookState.Raw;
+            cookingSound.volume = 0.5f;
+        }
 
         if (currentState != lastState)
         {
@@ -88,7 +105,10 @@ public class temporaryCookableController : MonoBehaviour
             if (currentState == CookState.Burnt && isCooking)
             {
                 if (smoke != null && !smoke.isPlaying)
+                {
                     smoke.Play();
+                    burntSound.Play();
+                }
             }
             else
             {
