@@ -6,6 +6,9 @@ public class VRGrab : MonoBehaviour
     public Transform holdPoint;
     public float grabDistance = 3f;
 
+    public AudioSource grabSound;
+    public AudioSource dropSound;
+
     public SteamVR_Input_Sources handType;
     public SteamVR_Action_Boolean grabAction;
 
@@ -56,6 +59,8 @@ public class VRGrab : MonoBehaviour
         {
             if (hit.collider.CompareTag("Interactable"))
             {
+                grabSound.Play();
+
                 heldObject = hit.collider.gameObject;
 
                 Rigidbody rb = heldObject.GetComponent<Rigidbody>();
@@ -76,6 +81,8 @@ public class VRGrab : MonoBehaviour
     void Drop()
     {
         if (heldObject == null) return;
+
+        dropSound.Play();
 
         Rigidbody rb = heldObject.GetComponent<Rigidbody>();
 
