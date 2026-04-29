@@ -2,7 +2,7 @@ using UnityEngine;
 using Valve.VR.InteractionSystem;
 using System.Collections.Generic;
 
-public class BurgerBase : MonoBehaviour
+public class BurgerBuilder : MonoBehaviour
 {
     private float currentHeight = 0f;
     public float heightStep = 0.05f;
@@ -12,18 +12,17 @@ public class BurgerBase : MonoBehaviour
     public List<Ingredient> stackedIngredients = new List<Ingredient>();
     public CookState finalCookState;
 
+    private Burger burger;
+
     private void Start()
     {
-        // Calculamos la altura inicial basada en el propio pan
+        burger = GetComponent<Burger>();
+
         Collider col = GetComponent<Collider>();
         if (col != null)
-        {
             currentHeight = col.bounds.extents.y * 2f;
-        }
         else
-        {
             currentHeight = heightStep;
-        }
     }
 
     private void Update()
@@ -33,43 +32,41 @@ public class BurgerBase : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        // Buscamos el ingrediente en el objeto que toca el trigger (o sus padres)
         Ingredient ingredient = other.GetComponentInParent<Ingredient>();
 
-        // Filtros de seguridad
-        if (ingredient == null || ingredient.isPlaced || ingredient.gameObject == this.gameObject) return;
-        if (ingredient.type == IngredientType.BaseBread) return;
+        if (ingredient == null || ingredient.isPlaced || ingredient.gameObject == this.gameObject)
+            return;
 
-        // Verificamos si SteamVR aún tiene el objeto agarrado
+        // 🔥 SOLO empezar con pan base
+        if (stackedIngredients.Count == 0 && ingredient.type != IngredientType.BaseBread)
+            return;
+
         Interactable interactable = ingredient.GetComponentInParent<Interactable>();
         if (interactable != null && interactable.attachedToHand != null)
-        {
-            return; // Sigue en la mano, no lo acoplamos todavía
-        }
+            return;
 
-        // Si se suelta dentro del trigger, lo añadimos
         AddIngredient(ingredient);
     }
 
     public void AddIngredient(Ingredient ingredient)
     {
-        // 🚩 LOG DE INICIO: Solo sale cuando pones el primer ingrediente extra
-        if (stackedIngredients.Count == 0)
-        {
-            Debug.Log("<color=orange>🍔 Hamburguesa iniciada: Se ha colocado el primer ingrediente.</color>");
-        }
-
-        Debug.Log("➕ Añadiendo a la torre: " + ingredient.type);
+        Debug.Log("➕ Añadiendo: " + ingredient.type);
 
         ingredient.isPlaced = true;
         stackedIngredients.Add(ingredient);
+        // 🔥 PRIMERO mover burger si es el primero
+        if (stackedIngredients.Count == 1 && ingredient.type == IngredientType.BaseBread)
+        {
+            transform.position = ingredient.transform.position;
+        }
 
-        // Calculamos la altura del nuevo ingrediente
-        Collider col = ingredient.GetComponent<Collider>();
-        float height = heightStep;
-        if (col != null) height = col.bounds.size.y;
+        // 🔥 LUEGO hacer parent
+        ingredient.transform.SetParent(this.transform);
+        ingredient.transform.localPosition = new Vector3(0, currentHeight, 0);
+        // 🔥 Pasar a Burger
+        if (burger != null)
+            burger.AddIngredient(ingredient);
 
-        // Configuración de físicas para que no se caiga pero SteamVR lo reconozca
         Rigidbody rb = ingredient.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -77,24 +74,28 @@ public class BurgerBase : MonoBehaviour
             rb.useGravity = true;
         }
 
-        // Emparentamos el ingrediente al pan base
         ingredient.transform.SetParent(this.transform);
         ingredient.transform.localPosition = new Vector3(0, currentHeight, 0);
         ingredient.transform.localRotation = Quaternion.identity;
 
-        // Actualizamos la altura para el siguiente objeto
-        currentHeight += height;
+        float h = heightStep;
+        Collider c = ingredient.GetComponent<Collider>();
+        if (c != null) h = c.bounds.size.y;
+
+        currentHeight += h;
         ignoreExitTimer = 0.25f;
 
-        // Si es carne, guardamos su punto de cocción actual
+        // 🔥 Cocción
         temporaryCookableController meat = ingredient.GetComponent<temporaryCookableController>();
         if (meat != null)
         {
             finalCookState = meat.currentState;
-            Debug.Log("🔥 Punto de carne registrado: " + finalCookState);
+
+            if (burger != null)
+                burger.cookState = meat.currentState;
         }
 
-        // Si es el pan de arriba, cerramos la hamburguesa
+        // 🔒 Cerrar burger
         if (ingredient.type == IngredientType.TopBread)
         {
             FinishBurger();
@@ -106,6 +107,7 @@ public class BurgerBase : MonoBehaviour
         if (ignoreExitTimer > 0) return;
 
         Ingredient ingredient = other.GetComponentInParent<Ingredient>();
+
         if (ingredient != null && ingredient.isPlaced && stackedIngredients.Contains(ingredient))
         {
             RemoveIngredient(ingredient);
@@ -114,7 +116,7 @@ public class BurgerBase : MonoBehaviour
 
     public void RemoveIngredient(Ingredient ingredient)
     {
-        Debug.Log("➖ Ingrediente retirado: " + ingredient.type);
+        Debug.Log("➖ Quitando: " + ingredient.type);
 
         Rigidbody rb = ingredient.GetComponent<Rigidbody>();
         if (rb != null)
@@ -127,29 +129,29 @@ public class BurgerBase : MonoBehaviour
         ingredient.isPlaced = false;
         stackedIngredients.Remove(ingredient);
 
-        // Restamos la altura para evitar huecos flotantes
-        Collider col = ingredient.GetComponent<Collider>();
-        float height = heightStep;
-        if (col != null) height = col.bounds.size.y;
-        currentHeight -= height;
+        if (burger != null)
+            burger.RemoveIngredient(ingredient);
+
+        float h = heightStep;
+        Collider c = ingredient.GetComponent<Collider>();
+        if (c != null) h = c.bounds.size.y;
+
+        currentHeight -= h;
     }
 
     private void FinishBurger()
     {
-        Debug.Log("<color=green>✅ Hamburguesa completada. ¡Lista para servir!</color>");
+        Debug.Log("✅ Hamburguesa completada");
 
-        // Bloqueamos los ingredientes para que solo se pueda agarrar el pan base
         foreach (Ingredient ing in stackedIngredients)
         {
             Interactable interactable = ing.GetComponent<Interactable>();
-            if (interactable != null) interactable.enabled = false;
+            if (interactable != null)
+                interactable.enabled = false;
         }
 
-        // Eliminamos el trigger de construcción para que no acepte más piezas
-        Collider[] colliders = GetComponents<Collider>();
-        foreach (Collider c in colliders)
-        {
-            if (c.isTrigger) Destroy(c);
-        }
+        Collider col = GetComponent<Collider>();
+        if (col != null && col.isTrigger)
+            col.enabled = false;
     }
 }
