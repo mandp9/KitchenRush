@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: c02b42903d6a03a4bac432d0985ed5b8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.546
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c02b42903d6a03a4bac432d0985ed5b8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.2639
+      value: 1.196
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c02b42903d6a03a4bac432d0985ed5b8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.171
+      value: 0.053
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c02b42903d6a03a4bac432d0985ed5b8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c02b42903d6a03a4bac432d0985ed5b8, type: 3}
       propertyPath: m_Name
-      value: tomato-slice
+      value: tomato-slice-prefab
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c02b42903d6a03a4bac432d0985ed5b8, type: 3}
       propertyPath: m_TagString
@@ -113,7 +113,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 898343138589761354}
   serializedVersion: 4
-  m_Mass: 0.2
+  m_Mass: 0.05
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
