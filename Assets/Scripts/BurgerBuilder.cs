@@ -13,32 +13,28 @@ public class BurgerBuilder : MonoBehaviour
     public CookState finalCookState;
 
     private Burger burger;
+    private bool isFinished = false;
 
     private void Start()
     {
         burger = GetComponent<Burger>();
-
-        Collider col = GetComponent<Collider>();
-        if (col != null)
-            currentHeight = col.bounds.extents.y * 2f;
-        else
-            currentHeight = heightStep;
+        currentHeight = 0f;
     }
 
     private void Update()
     {
-        if (ignoreExitTimer > 0) ignoreExitTimer -= Time.deltaTime;
+        if (ignoreExitTimer > 0)
+            ignoreExitTimer -= Time.deltaTime;
     }
 
     private void OnTriggerStay(Collider other)
     {
+        if (isFinished) return;
+        if (stackedIngredients.Count == 0) return;
+
         Ingredient ingredient = other.GetComponentInParent<Ingredient>();
 
         if (ingredient == null || ingredient.isPlaced || ingredient.gameObject == this.gameObject)
-            return;
-
-        // 🔥 SOLO empezar con pan base
-        if (stackedIngredients.Count == 0 && ingredient.type != IngredientType.BaseBread)
             return;
 
         Interactable interactable = ingredient.GetComponentInParent<Interactable>();
@@ -54,38 +50,48 @@ public class BurgerBuilder : MonoBehaviour
 
         ingredient.isPlaced = true;
         stackedIngredients.Add(ingredient);
-        // 🔥 PRIMERO mover burger si es el primero
-        if (stackedIngredients.Count == 1 && ingredient.type == IngredientType.BaseBread)
-        {
-            transform.position = ingredient.transform.position;
-        }
 
-        // 🔥 LUEGO hacer parent
-        ingredient.transform.SetParent(this.transform);
-        ingredient.transform.localPosition = new Vector3(0, currentHeight, 0);
-        // 🔥 Pasar a Burger
         if (burger != null)
             burger.AddIngredient(ingredient);
 
+        // 🔥 DESACTIVAR VR
+        Interactable interactable = ingredient.GetComponent<Interactable>();
+        if (interactable != null)
+            interactable.enabled = false;
+
+        // 🔥 FIJAR (SIN FÍSICA)
         Rigidbody rb = ingredient.GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.isKinematic = true;
-            rb.useGravity = true;
+            rb.useGravity = false;
         }
 
-        ingredient.transform.SetParent(this.transform);
-        ingredient.transform.localPosition = new Vector3(0, currentHeight, 0);
-        ingredient.transform.localRotation = Quaternion.identity;
-
+        // 🔥 CALCULAR ALTURA
         float h = heightStep;
         Collider c = ingredient.GetComponent<Collider>();
         if (c != null) h = c.bounds.size.y;
 
+        // 🔥 PARENT
+        ingredient.transform.SetParent(this.transform, false);
+
+        // 🔥 POSICIÓN CORRECTA
+        if (stackedIngredients.Count == 1)
+        {
+            ingredient.transform.localPosition = new Vector3(0, h * 0.5f, 0);
+        }
+        else
+        {
+            ingredient.transform.localPosition = new Vector3(0, currentHeight + h * 0.5f, 0);
+        }
+
+        ingredient.transform.localRotation = Quaternion.identity;
+
+        // 🔥 SUMAR ALTURA SOLO UNA VEZ
         currentHeight += h;
         ignoreExitTimer = 0.25f;
 
-        // 🔥 Cocción
+        // 🔥 COCCIÓN
         temporaryCookableController meat = ingredient.GetComponent<temporaryCookableController>();
         if (meat != null)
         {
@@ -95,9 +101,10 @@ public class BurgerBuilder : MonoBehaviour
                 burger.cookState = meat.currentState;
         }
 
-        // 🔒 Cerrar burger
+        // 🔒 FINALIZAR
         if (ingredient.type == IngredientType.TopBread)
         {
+            isFinished = true;
             FinishBurger();
         }
     }
@@ -105,6 +112,7 @@ public class BurgerBuilder : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         if (ignoreExitTimer > 0) return;
+        if (isFinished) return;
 
         Ingredient ingredient = other.GetComponentInParent<Ingredient>();
 
@@ -116,6 +124,9 @@ public class BurgerBuilder : MonoBehaviour
 
     public void RemoveIngredient(Ingredient ingredient)
     {
+        if (ingredient.type == IngredientType.BaseBread && stackedIngredients.Count == 1)
+            return;
+
         Debug.Log("➖ Quitando: " + ingredient.type);
 
         Rigidbody rb = ingredient.GetComponent<Rigidbody>();
@@ -124,6 +135,10 @@ public class BurgerBuilder : MonoBehaviour
             rb.isKinematic = false;
             rb.useGravity = true;
         }
+
+        Interactable interactable = ingredient.GetComponent<Interactable>();
+        if (interactable != null)
+            interactable.enabled = true;
 
         ingredient.transform.SetParent(null);
         ingredient.isPlaced = false;
@@ -145,10 +160,23 @@ public class BurgerBuilder : MonoBehaviour
 
         foreach (Ingredient ing in stackedIngredients)
         {
+            Rigidbody rb = ing.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.isKinematic = false;
+                rb.useGravity = true;
+            }
+
             Interactable interactable = ing.GetComponent<Interactable>();
             if (interactable != null)
-                interactable.enabled = false;
+                interactable.enabled = true;
         }
+
+        Rigidbody mainRb = GetComponent<Rigidbody>();
+        if (mainRb == null)
+            mainRb = gameObject.AddComponent<Rigidbody>();
+
+        mainRb.isKinematic = false;
 
         Collider col = GetComponent<Collider>();
         if (col != null && col.isTrigger)
