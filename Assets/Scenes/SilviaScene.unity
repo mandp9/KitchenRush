@@ -836,7 +836,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -8487822744422770291, guid: f9062f77427eedb4189fe4d3b1989959, type: 3}
 --- !u!4 &452619172 stripped
@@ -5324,7 +5324,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.125, y: 0.25, z: 0.125}
+  m_Size: {x: 0.15, y: 0.25, z: 0.15}
   m_Center: {x: 0, y: 0.1667, z: 0}
 --- !u!114 &7654799673683103286
 MonoBehaviour:
@@ -5352,7 +5352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ffae5b3e44dfe648a01a436f5b7e280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 8
+  type: 5
   isPlaced: 0
 --- !u!1 &8884173059401771938
 GameObject:
