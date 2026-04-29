@@ -34,10 +34,10 @@ public class BurgerController : MonoBehaviour
         foreach (GameObject ingredient in ingredientObjects)
         {
             // fix all ingredients in place
-            ingredient.GetComponent<Rigidbody>().isKinematic = true;
-            ingredient.GetComponent<Rigidbody>().useGravity = false;
-            ingredient.GetComponent<Interactable>().enabled = false;
-            ingredient.GetComponent<Throwable>().enabled = false;
+            // "Kind of a Jack the Ripper approach,"  -- Jose Pascual
+            Destroy(ingredient.GetComponent<Throwable>());
+            Destroy(ingredient.GetComponent<Rigidbody>());
+            Destroy(ingredient.GetComponent<Interactable>());
             ingredient.tag = "Untagged";
             ingredient.transform.parent = this.transform;
 
