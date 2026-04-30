@@ -139,4 +139,12 @@ public class temporaryCookableController : MonoBehaviour
                 break;
         }
     }
+
+    public CookState GetCookState()
+    {
+        if (cookTime > burntTime) return CookState.Burnt;
+        if (cookTime > wellDoneTime) return CookState.WellDone;
+        if (cookTime > rareTime) return CookState.Rare;
+        return CookState.Raw;
+    }
 }

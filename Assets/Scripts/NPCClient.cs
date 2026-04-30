@@ -31,8 +31,6 @@ public class NPCClient : MonoBehaviour
         Harto
     }
 
-
-
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -81,7 +79,6 @@ public class NPCClient : MonoBehaviour
         }
     }
 
-
     void Pedir()
     {
         Debug.Log("Quiero comida");
@@ -94,33 +91,39 @@ public class NPCClient : MonoBehaviour
 
         currentOrder.requiredIngredients = new List<IngredientType>()
         {
+            // bottom bun implied
             IngredientType.TopBread,
-            IngredientType.BaseBread,
-            IngredientType.Lettuce,
-            IngredientType.Onion
+            IngredientType.Meat,
+            IngredientType.Tomato
         };
 
-        Debug.Log("Pedido: Rare + Bread + Lettuce + Onion");
+        Debug.Log("Pedido: Rare + Tomato");
 
         esperando = true;
     }
 
-    public void RecibirBurger(Burger burger)
+    public void RecibirBurger(BurgerController burger)
     {
+        // give burger to npc
+        burger.gameObject.transform.parent = this.transform;
+
         if (EsPedidoCorrecto(burger))
         {
             Debug.Log("Pedido correcto");
-            Destroy(gameObject);
+            Invoke("Irse", 1);
         }
         else
         {
             Debug.Log("Pedido incorrecto");
-            Irse();
+            Invoke("Irse", 1);
         }
     }
-    bool EsPedidoCorrecto(Burger burger)
+
+    bool EsPedidoCorrecto(BurgerController burger)
     {
-        if (burger.cookState != currentOrder.requiredCookState)
+        if (burger.pattyCookState == null) return false;
+
+        if (burger.pattyCookState != currentOrder.requiredCookState)
             return false;
 
         foreach (IngredientType ing in currentOrder.requiredIngredients)
@@ -134,17 +137,19 @@ public class NPCClient : MonoBehaviour
 
         return true;
     }
+
     void OnTriggerEnter(Collider other)
     {
         if (!esperando) return;
 
-        Burger burger = other.GetComponent<Burger>();
+        BurgerController burger = other.GetComponent<BurgerController>();
 
         if (burger != null && burger.ingredients.Count > 0)
         {
             RecibirBurger(burger);
         }
     }
+
     void Irse()
     {
         esperando = false;
@@ -194,6 +199,4 @@ public class NPCClient : MonoBehaviour
                 break;
         }
     }
-
-
 }
