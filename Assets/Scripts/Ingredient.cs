@@ -8,7 +8,8 @@ public enum IngredientType
     Onion,
     Cheese,
     BaseBread,
-    TopBread
+    TopBread,
+    fries
 }
 
 public class Ingredient : MonoBehaviour
