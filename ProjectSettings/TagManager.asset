@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Interactable
   - Cooker
+  - Oil
   layers:
   - Default
   - TransparentFX
