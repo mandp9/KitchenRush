@@ -3448,6 +3448,7 @@ GameObject:
   - component: {fileID: 1277584104}
   - component: {fileID: 1277584103}
   - component: {fileID: 1277584105}
+  - component: {fileID: 1277584106}
   m_Layer: 0
   m_Name: NPC_root
   m_TagString: Untagged
@@ -3474,7 +3475,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 1.8
-  m_BaseOffset: 0.3
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!4 &1277584104
@@ -3512,6 +3513,27 @@ MonoBehaviour:
     requiredCookState: 0
     requiredIngredients: 
   efectoHumo: {fileID: 104829970813648393, guid: d3015b7eea383f64d8b81f965cc466e7, type: 3}
+--- !u!65 &1277584106
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277584102}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.5, y: 1, z: 1}
+  m_Center: {x: 0, y: 1.4, z: 0.8}
 --- !u!1001 &1306196914
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4398,7 +4420,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.19999999, y: 1, z: 0}
+  m_Size: {x: 21.34, y: 31.51, z: 0.01}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1721012363
 PrefabInstance:
@@ -4908,7 +4930,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.13333334
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 2a71751f5efe8c84abf9200a87679268, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 53d1b8129b18b914a87da26d307cacf0, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &1952846287 stripped
 GameObject:

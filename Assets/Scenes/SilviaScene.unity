@@ -243,9 +243,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 249b74e69b3486244b5b9443e96cedd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heightStep: 0.05
-  stackedIngredients: []
-  finalCookState: 0
 --- !u!1001 &234204407
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2744,7 +2741,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 1.8
-  m_BaseOffset: 0.3
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!4 &1277584104
@@ -4181,7 +4178,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.19999999, y: 1, z: 0}
+  m_Size: {x: 21.34, y: 31.51, z: 0.01}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1721012363
 PrefabInstance:
@@ -4657,7 +4654,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.13333334
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 2a71751f5efe8c84abf9200a87679268, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 3895b293374ce7142915722611b7ade4, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &1952846287 stripped
 GameObject:
