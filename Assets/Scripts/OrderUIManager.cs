@@ -34,7 +34,7 @@ public class OrderUIManager : MonoBehaviour
 
                 if (audioSource != null && takingOrderSound != null)
                     audioSource.pitch = Random.Range(0.95f, 1.05f);
-                    audioSource.PlayOneShot(takingOrderSound, 3f);
+                    audioSource.PlayOneShot(takingOrderSound, 4f);
 
                 return i;
             }
@@ -53,6 +53,6 @@ public class OrderUIManager : MonoBehaviour
 
         if (audioSource != null && crossOutSound != null)
             audioSource.pitch = Random.Range(0.9f, 1.1f);
-            audioSource.PlayOneShot(crossOutSound, 2f);
+            audioSource.PlayOneShot(crossOutSound, 4f);
     }
 }
