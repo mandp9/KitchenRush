@@ -63,6 +63,11 @@ public class NPCClient : MonoBehaviour
         haEmpezadoAMoverse = true;
     }
 
+    void PararHablar()
+    {
+        anim.SetBool("isOrdering", false);
+    }
+
     void Update()
     {
         if (!haLlegado)
@@ -103,7 +108,6 @@ public class NPCClient : MonoBehaviour
             {
                 tiempoParpadeo += Time.deltaTime * velocidadParpadeo;
 
-                // efecto sinusoidal (0–1)
                 float t = (Mathf.Sin(tiempoParpadeo) + 1f) * 0.5f;
 
                 // mezcla con blanco para parpadeo
@@ -119,8 +123,8 @@ public class NPCClient : MonoBehaviour
 
     void Pedir()
     {
-        Debug.Log("Quiero comida");
-
+        anim.SetBool("isOrdering", true);
+         Invoke(nameof(PararHablar), 2.5f);
         timerInicio = 0f;
         pacienciaActual = pacienciaMax;
 
@@ -289,6 +293,7 @@ public class NPCClient : MonoBehaviour
     void Irse()
     {
         esperando = false;
+        anim.SetBool("isOrdering", false);
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
 
         if (miSlotUI != -1)

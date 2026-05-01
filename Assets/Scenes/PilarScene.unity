@@ -6705,7 +6705,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destino: {fileID: 1620209891}
   delayAntesDeEsperar: 0
-  pacienciaMax: 100
+  pacienciaMax: 50
   currentOrder:
     requiredCookState: 0
     requiredIngredients: 

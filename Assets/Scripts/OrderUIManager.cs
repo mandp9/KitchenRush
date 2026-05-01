@@ -26,7 +26,6 @@ public class OrderUIManager : MonoBehaviour
 
     public int AsignarPedido(string texto)
     {
-        Debug.Log("📥 Intentando asignar pedido...");
 
         for (int i = 0; i < orderTexts.Length; i++)
         {
@@ -37,9 +36,7 @@ public class OrderUIManager : MonoBehaviour
                 ocupado[i] = true;
                 orderTexts[i].text = texto;
 
-                Debug.Log("✅ Pedido asignado en slot " + i);
 
-                // 🔊 SONIDO (CORREGIDO)
                 if (audioSource != null && takingOrderSound != null)
                 {
                     audioSource.pitch = Random.Range(0.95f, 1.05f);
@@ -58,7 +55,6 @@ public class OrderUIManager : MonoBehaviour
     {
         if (index < 0 || index >= orderTexts.Length)
         {
-            Debug.LogWarning("❌ Índice inválido al liberar pedido");
             return;
         }
 
@@ -67,7 +63,6 @@ public class OrderUIManager : MonoBehaviour
         ocupado[index] = false;
         orderTexts[index].text = "";
 
-        // 🔊 SONIDO (CORREGIDO)
         if (audioSource != null && crossOutSound != null)
         {
             audioSource.pitch = Random.Range(0.9f, 1.1f);
