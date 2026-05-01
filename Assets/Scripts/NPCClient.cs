@@ -8,7 +8,7 @@ public class NPCClient : MonoBehaviour
     private NavMeshAgent agent;
     private Animator anim;
     private bool haLlegado = false;
-
+    private int miSlotUI = -1;
     [Header("Paciencia")]
     public float delayAntesDeEsperar = 8f;
     private float timerInicio = 0f;
@@ -94,9 +94,25 @@ public class NPCClient : MonoBehaviour
         Debug.Log("Pedido: Rare + Tomato + Fries");
 
         esperando = true;
+
+        OrderUIManager ui = FindObjectOfType<OrderUIManager>();
+
+        string texto =
+        "Pedido\n" +
+        "Carne: " + currentOrder.requiredCookState + "\n" +
+        "Ingredientes:\n";
+
+        foreach (var ing in currentOrder.requiredIngredients)
+        {
+            texto += "- " + ing + "\n";
+        }
+
+        if (currentOrder.requiresFries)
+            texto += "Fries\n";
+
+        miSlotUI = ui.AsignarPedido(texto);
     }
 
-    // 🍔 RECIBIR BURGER
     public void RecibirBurger(BurgerController burger)
     {
         burgerRecibida = burger;
@@ -237,7 +253,11 @@ public class NPCClient : MonoBehaviour
     void Irse()
     {
         esperando = false;
+        OrderUIManager ui = FindObjectOfType<OrderUIManager>();
 
+        if (miSlotUI != -1)
+            ui.LiberarPedido(miSlotUI);
+            
         GameObject humo = Instantiate(efectoHumo, anim.transform.position, Quaternion.identity);
         Destroy(humo, 0.5f);
 
