@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class NPCClient : MonoBehaviour
 {
@@ -21,13 +22,24 @@ public class NPCClient : MonoBehaviour
     [Header("Pedido")]
     public Order currentOrder;
 
-    // 🔥 lo que recibe
     private BurgerController burgerRecibida = null;
     private bool friesRecibidas = false;
 
     [Header("Efectos")]
     public GameObject efectoHumo;
 
+    [Header("Movimiento")]
+    public float delayAntesDeIr = 5f;
+
+    [Header("UI Paciencia")]
+    public Image barraPaciencia;
+
+    [Header("Efecto Paciencia")]
+    public float umbralParpadeo = 0.3f; 
+    public float velocidadParpadeo = 5f;
+
+    private float tiempoParpadeo = 0f;
+    private bool haEmpezadoAMoverse = false;
     enum EstadoPaciencia
     {
         Tranquilo,
@@ -40,8 +52,15 @@ public class NPCClient : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponentInChildren<Animator>();
 
-        agent.SetDestination(destino.position);
         pacienciaActual = pacienciaMax;
+
+        Invoke(nameof(EmpezarAMoverse), delayAntesDeIr);
+    }
+
+    void EmpezarAMoverse()
+    {
+        agent.SetDestination(destino.position);
+        haEmpezadoAMoverse = true;
     }
 
     void Update()
@@ -50,7 +69,7 @@ public class NPCClient : MonoBehaviour
         {
             anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f);
 
-            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            if (haEmpezadoAMoverse && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance && agent.velocity.magnitude < 0.1f)
             {
                 haLlegado = true;
                 anim.SetBool("isWalking", false);
@@ -67,6 +86,33 @@ public class NPCClient : MonoBehaviour
                 pacienciaActual -= Time.deltaTime;
                 pacienciaActual = Mathf.Max(pacienciaActual, 0f);
                 EvaluarPaciencia();
+            }
+        }
+        if (barraPaciencia != null)
+        {
+            float ratio = pacienciaActual / pacienciaMax;
+
+            // 🔋 cantidad
+            barraPaciencia.fillAmount = ratio;
+
+            // 🎨 color verde → rojo
+            Color colorBase = Color.Lerp(Color.red, Color.green, ratio);
+
+            // ⚠️ PARPADEO
+            if (ratio <= umbralParpadeo)
+            {
+                tiempoParpadeo += Time.deltaTime * velocidadParpadeo;
+
+                // efecto sinusoidal (0–1)
+                float t = (Mathf.Sin(tiempoParpadeo) + 1f) * 0.5f;
+
+                // mezcla con blanco para parpadeo
+                barraPaciencia.color = Color.Lerp(colorBase, Color.white, t);
+            }
+            else
+            {
+                barraPaciencia.color = colorBase;
+                tiempoParpadeo = 0f;
             }
         }
     }
@@ -98,9 +144,9 @@ public class NPCClient : MonoBehaviour
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
 
         string texto =
-        "Pedido\n" +
-        "Carne: " + currentOrder.requiredCookState + "\n" +
-        "Ingredientes:\n";
+        "Order\n" +
+        "Patty: " + currentOrder.requiredCookState + "\n" +
+        "Ingredients:\n";
 
         foreach (var ing in currentOrder.requiredIngredients)
         {
@@ -118,7 +164,7 @@ public class NPCClient : MonoBehaviour
         burgerRecibida = burger;
         burger.transform.parent = this.transform;
 
-        Debug.Log("🍔 Burger recibida");
+        Debug.Log("Burger recibida");
 
         ComprobarPedidoCompleto();
     }
@@ -127,7 +173,7 @@ public class NPCClient : MonoBehaviour
     {
         friesRecibidas = true;
 
-        Debug.Log("🍟 Fries recibidas");
+        Debug.Log("Fries recibidas");
 
         ComprobarPedidoCompleto();
     }
@@ -136,7 +182,6 @@ public class NPCClient : MonoBehaviour
     {
         if (!esperando) return;
 
-        // 🍔 BURGER
         BurgerController burger = other.GetComponent<BurgerController>();
         if (burger != null && burger.ingredients.Count > 0)
         {
@@ -144,7 +189,6 @@ public class NPCClient : MonoBehaviour
             return;
         }
 
-        // 🍟 FRIES (por nombre del objeto)
         if (other.gameObject.name.Contains("frieswithcontainer"))
         {
             RecibirFries(other.gameObject);
@@ -182,17 +226,13 @@ public class NPCClient : MonoBehaviour
     {
         Debug.Log("========== DEBUG PEDIDO ==========");
 
-        // 🍔 INGREDIENTES BURGER
-        Debug.Log("🍔 Burger ingredientes: " + string.Join(", ", burger.ingredients));
+        Debug.Log("Burger ingredientes: " + string.Join(", ", burger.ingredients));
 
-        // 📦 INGREDIENTES PEDIDO
-        Debug.Log("📦 Pedido ingredientes: " + string.Join(", ", currentOrder.requiredIngredients));
+        Debug.Log("Pedido ingredientes: " + string.Join(", ", currentOrder.requiredIngredients));
 
-        // 🍖 COCCIÓN
-        Debug.Log("🔥 Cook burger: " + burger.pattyCookState);
-        Debug.Log("🔥 Cook pedido: " + currentOrder.requiredCookState);
+        Debug.Log("Cook burger: " + burger.pattyCookState);
+        Debug.Log("Cook pedido: " + currentOrder.requiredCookState);
 
-        // 🔍 DETALLE DE CADA INGREDIENTE
         foreach (IngredientType ing in burger.ingredients)
         {
             if (currentOrder.requiredIngredients.Contains(ing))
@@ -209,7 +249,6 @@ public class NPCClient : MonoBehaviour
             }
         }
 
-        // 🔍 INGREDIENTES FALTANTES
         foreach (IngredientType ing in currentOrder.requiredIngredients)
         {
             if (!burger.ingredients.Contains(ing))
@@ -218,14 +257,12 @@ public class NPCClient : MonoBehaviour
             }
         }
 
-        // ❌ CHECK COCCIÓN
         if (burger.pattyCookState != currentOrder.requiredCookState)
         {
             Debug.Log("❌ ERROR: Cocción incorrecta");
             return false;
         }
 
-        // ❌ CHECK FALTANTES
         foreach (IngredientType ing in currentOrder.requiredIngredients)
         {
             if (!burger.ingredients.Contains(ing))
@@ -234,7 +271,6 @@ public class NPCClient : MonoBehaviour
             }
         }
 
-        // ❌ CHECK EXTRAS (ignorando BaseBread)
         foreach (IngredientType ing in burger.ingredients)
         {
             if (ing == IngredientType.BaseBread) continue;

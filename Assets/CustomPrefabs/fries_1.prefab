@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: -3369871990567448335}
   - component: {fileID: 2844791854720845624}
   - component: {fileID: 7386212940567315521}
-  - component: {fileID: 8809614089371668397}
   m_Layer: 0
   m_Name: fries_1
   m_TagString: Untagged
@@ -278,16 +277,3 @@ MonoBehaviour:
   currentState: 0
   rawMat: {fileID: 2100000, guid: a0c5041b1d2cbc94c8e2ebf97e82deb8, type: 2}
   cookedMat: {fileID: 2100000, guid: 59d084dd48da4474d9241cb658081acb, type: 2}
---- !u!114 &8809614089371668397
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2941881431371583840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f46f9a746807654889326956d3bec63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  originSpawner: {fileID: 0}

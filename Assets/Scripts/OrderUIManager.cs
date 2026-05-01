@@ -3,6 +3,7 @@ using TMPro;
 
 public class OrderUIManager : MonoBehaviour
 {
+    [Header("UI")]
     public TextMeshProUGUI[] orderTexts;
 
     private bool[] ocupado;
@@ -25,34 +26,52 @@ public class OrderUIManager : MonoBehaviour
 
     public int AsignarPedido(string texto)
     {
+        Debug.Log("📥 Intentando asignar pedido...");
+
         for (int i = 0; i < orderTexts.Length; i++)
         {
-            if (!ocupado[i])
+            Debug.Log("Slot " + i + " ocupado: " + ocupado[i]);
+
+            if (!ocupado[i] || string.IsNullOrEmpty(orderTexts[i].text))
             {
                 ocupado[i] = true;
                 orderTexts[i].text = texto;
 
+                Debug.Log("✅ Pedido asignado en slot " + i);
+
+                // 🔊 SONIDO (CORREGIDO)
                 if (audioSource != null && takingOrderSound != null)
+                {
                     audioSource.pitch = Random.Range(0.95f, 1.05f);
                     audioSource.PlayOneShot(takingOrderSound, 4f);
+                }
 
                 return i;
             }
         }
 
-        Debug.LogWarning("No hay hueco para más pedidos");
+        Debug.LogWarning("❌ No hay hueco para más pedidos");
         return -1;
     }
 
     public void LiberarPedido(int index)
     {
-        if (index < 0 || index >= orderTexts.Length) return;
+        if (index < 0 || index >= orderTexts.Length)
+        {
+            Debug.LogWarning("❌ Índice inválido al liberar pedido");
+            return;
+        }
+
+        Debug.Log("🧹 Liberando slot " + index);
 
         ocupado[index] = false;
         orderTexts[index].text = "";
 
+        // 🔊 SONIDO (CORREGIDO)
         if (audioSource != null && crossOutSound != null)
+        {
             audioSource.pitch = Random.Range(0.9f, 1.1f);
             audioSource.PlayOneShot(crossOutSound, 4f);
+        }
     }
 }
