@@ -16,7 +16,6 @@ public class OilFryer : MonoBehaviour
 
             if (!fryingAudio.isPlaying)
                 fryingAudio.Play();
-                Debug.Log("Sonido ON");
         }
     }
 

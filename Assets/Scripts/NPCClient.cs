@@ -21,6 +21,10 @@ public class NPCClient : MonoBehaviour
     [Header("Pedido")]
     public Order currentOrder;
 
+    // 🔥 lo que recibe
+    private BurgerController burgerRecibida = null;
+    private bool friesRecibidas = false;
+
     [Header("Efectos")]
     public GameObject efectoHumo;
 
@@ -37,7 +41,6 @@ public class NPCClient : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
 
         agent.SetDestination(destino.position);
-
         pacienciaActual = pacienciaMax;
     }
 
@@ -45,17 +48,9 @@ public class NPCClient : MonoBehaviour
     {
         if (!haLlegado)
         {
-            if (agent.velocity.magnitude > 0.1f)
-            {
-                anim.SetBool("isWalking", true);
-            }
-            else
-            {
-                anim.SetBool("isWalking", false);
-            }
+            anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f);
 
-            if (!agent.pathPending &&
-            agent.remainingDistance <= agent.stoppingDistance)
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
                 haLlegado = true;
                 anim.SetBool("isWalking", false);
@@ -70,10 +65,7 @@ public class NPCClient : MonoBehaviour
             if (timerInicio >= delayAntesDeEsperar)
             {
                 pacienciaActual -= Time.deltaTime;
-
-                if (pacienciaActual < 0f)
-                    pacienciaActual = 0f;
-
+                pacienciaActual = Mathf.Max(pacienciaActual, 0f);
                 EvaluarPaciencia();
             }
         }
@@ -91,82 +83,178 @@ public class NPCClient : MonoBehaviour
 
         currentOrder.requiredIngredients = new List<IngredientType>()
         {
-            // bottom bun implied
             IngredientType.TopBread,
             IngredientType.Meat,
             IngredientType.Tomato
         };
 
-        Debug.Log("Pedido: Rare + Tomato");
+        currentOrder.requiresFries = true;
+        currentOrder.requiresDrink = false;
+
+        Debug.Log("Pedido: Rare + Tomato + Fries");
 
         esperando = true;
     }
 
+    // 🍔 RECIBIR BURGER
     public void RecibirBurger(BurgerController burger)
     {
-        // give burger to npc
-        burger.gameObject.transform.parent = this.transform;
+        burgerRecibida = burger;
+        burger.transform.parent = this.transform;
 
-        if (EsPedidoCorrecto(burger))
-        {
-            Debug.Log("Pedido correcto");
-            Invoke("Irse", 1);
-        }
-        else
-        {
-            Debug.Log("Pedido incorrecto");
-            Invoke("Irse", 1);
-        }
+        Debug.Log("🍔 Burger recibida");
+
+        ComprobarPedidoCompleto();
     }
 
-    bool EsPedidoCorrecto(BurgerController burger)
+    public void RecibirFries(GameObject fries)
     {
-        if (burger.pattyCookState == null) return false;
+        friesRecibidas = true;
 
-        if (burger.pattyCookState != currentOrder.requiredCookState)
-            return false;
+        Debug.Log("🍟 Fries recibidas");
 
-        foreach (IngredientType ing in currentOrder.requiredIngredients)
-        {
-            if (!burger.ingredients.Contains(ing))
-                return false;
-        }
-
-        if (burger.ingredients.Count != currentOrder.requiredIngredients.Count)
-            return false;
-
-        return true;
+        ComprobarPedidoCompleto();
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (!esperando) return;
 
+        // 🍔 BURGER
         BurgerController burger = other.GetComponent<BurgerController>();
-
         if (burger != null && burger.ingredients.Count > 0)
         {
             RecibirBurger(burger);
+            return;
         }
+
+        // 🍟 FRIES (por nombre del objeto)
+        if (other.gameObject.name.Contains("frieswithcontainer"))
+        {
+            RecibirFries(other.gameObject);
+            return;
+        }
+    }
+
+    void ComprobarPedidoCompleto()
+    {
+        if (burgerRecibida == null) return;
+        if (currentOrder.requiresFries && !friesRecibidas) return;
+
+        esperando = false;
+
+        bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
+
+        if (currentOrder.requiresFries && !friesRecibidas)
+        {
+            pedidoCorrecto = false;
+        }
+
+        if (pedidoCorrecto)
+        {
+            Debug.Log("✅ Pedido COMPLETO y CORRECTO");
+        }
+        else
+        {
+            Debug.Log("❌ Pedido COMPLETO pero INCORRECTO");
+        }
+
+        Invoke("Irse", 1);
+    }
+
+   bool EsPedidoCorrecto(BurgerController burger)
+    {
+        Debug.Log("========== DEBUG PEDIDO ==========");
+
+        // 🍔 INGREDIENTES BURGER
+        Debug.Log("🍔 Burger ingredientes: " + string.Join(", ", burger.ingredients));
+
+        // 📦 INGREDIENTES PEDIDO
+        Debug.Log("📦 Pedido ingredientes: " + string.Join(", ", currentOrder.requiredIngredients));
+
+        // 🍖 COCCIÓN
+        Debug.Log("🔥 Cook burger: " + burger.pattyCookState);
+        Debug.Log("🔥 Cook pedido: " + currentOrder.requiredCookState);
+
+        // 🔍 DETALLE DE CADA INGREDIENTE
+        foreach (IngredientType ing in burger.ingredients)
+        {
+            if (currentOrder.requiredIngredients.Contains(ing))
+            {
+                Debug.Log("✔ Ingrediente correcto: " + ing);
+            }
+            else if (ing == IngredientType.BaseBread)
+            {
+                Debug.Log("➖ BaseBread (ignorado)");
+            }
+            else
+            {
+                Debug.Log("❌ Ingrediente EXTRA: " + ing);
+            }
+        }
+
+        // 🔍 INGREDIENTES FALTANTES
+        foreach (IngredientType ing in currentOrder.requiredIngredients)
+        {
+            if (!burger.ingredients.Contains(ing))
+            {
+                Debug.Log("❌ Falta ingrediente: " + ing);
+            }
+        }
+
+        // ❌ CHECK COCCIÓN
+        if (burger.pattyCookState != currentOrder.requiredCookState)
+        {
+            Debug.Log("❌ ERROR: Cocción incorrecta");
+            return false;
+        }
+
+        // ❌ CHECK FALTANTES
+        foreach (IngredientType ing in currentOrder.requiredIngredients)
+        {
+            if (!burger.ingredients.Contains(ing))
+            {
+                return false;
+            }
+        }
+
+        // ❌ CHECK EXTRAS (ignorando BaseBread)
+        foreach (IngredientType ing in burger.ingredients)
+        {
+            if (ing == IngredientType.BaseBread) continue;
+
+            if (!currentOrder.requiredIngredients.Contains(ing))
+            {
+                return false;
+            }
+        }
+
+        Debug.Log("✅ RESULTADO: BURGER CORRECTA");
+
+        return true;
     }
 
     void Irse()
     {
         esperando = false;
+
         GameObject humo = Instantiate(efectoHumo, anim.transform.position, Quaternion.identity);
         Destroy(humo, 0.5f);
+
         Destroy(gameObject);
     }
 
     void EvaluarPaciencia()
     {
+        if (!esperando) return;
+
         float porcentaje = pacienciaActual / pacienciaMax;
 
         if (pacienciaActual <= 0f)
         {
             CambiarEstado(EstadoPaciencia.Harto);
         }
-        else if (porcentaje <= 0.25f) 
+        else if (porcentaje <= 0.25f)
         {
             CambiarEstado(EstadoPaciencia.Desesperado);
         }

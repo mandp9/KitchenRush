@@ -29,20 +29,26 @@ public class BurgerController : MonoBehaviour
         }
     }
 
-    public void FinaliseBurger()
+   public void FinaliseBurger()
     {
         Debug.Log("finalising burger...");
+
+        // 🔥 FORZAR BASE BREAD
+        if (!ingredients.Contains(IngredientType.BaseBread))
+        {
+            ingredients.Add(IngredientType.BaseBread);
+            Debug.Log("➕ BaseBread añadido manualmente");
+        }
+
         foreach (GameObject ingredient in ingredientObjects)
         {
             // fix all ingredients in place
-            // "Kind of a Jack the Ripper approach,"  -- Jose Pascual
             Destroy(ingredient.GetComponent<Throwable>());
             Destroy(ingredient.GetComponent<Rigidbody>());
             Destroy(ingredient.GetComponent<Interactable>());
             ingredient.tag = "Untagged";
             ingredient.transform.parent = this.transform;
 
-            // set pattyCookTime to max cookTime of added patties
             if (ingredient.GetComponent<temporaryCookableController>() != null)
                 if (ingredient.GetComponent<temporaryCookableController>().cookTime > pattyCookTime)
                 {
@@ -50,7 +56,6 @@ public class BurgerController : MonoBehaviour
                     pattyCookState = ingredient.GetComponent<temporaryCookableController>().GetCookState();
                 }
 
-            // remove trigger collider
             Destroy(this.GetComponent<BoxCollider>());
         }
     }
