@@ -172,9 +172,6 @@ public class NPCClient : MonoBehaviour
 
     public void RecibirBurger(BurgerController burger)
     {
-        // remove collider
-        Destroy(this.gameObject.GetComponent<BoxCollider>());
-
         burgerRecibida = burger;
         // give burger to npc
         // burger.gameObject.transform.parent = this.transform;
@@ -188,6 +185,7 @@ public class NPCClient : MonoBehaviour
     public void RecibirFries(GameObject fries)
     {
         friesRecibidas = true;
+        fries.transform.parent = this.transform;
 
         Debug.Log("Fries recibidas");
 
@@ -228,6 +226,9 @@ public class NPCClient : MonoBehaviour
 
         if (pedidoCorrecto)
         {
+            // remove collider
+            Destroy(this.gameObject.GetComponent<BoxCollider>());
+
             Debug.Log("✅ Pedido COMPLETO y CORRECTO");
 
             if (estadoActual == EstadoPaciencia.Tranquilo)
@@ -237,6 +238,9 @@ public class NPCClient : MonoBehaviour
         }
         else
         {
+            // remove collider
+            Destroy(this.gameObject.GetComponent<BoxCollider>());
+
             Debug.Log("❌ Pedido COMPLETO pero INCORRECTO");
             ScoreController.instance.score += puntosIncorrecto;
         }
