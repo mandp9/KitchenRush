@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 608423164869868765}
   - component: {fileID: 5173994090417222066}
   - component: {fileID: 5859537274889344504}
+  - component: {fileID: -7897478753803526976}
   m_Layer: 0
   m_Name: bun-top
   m_TagString: Interactable
@@ -259,7 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ffae5b3e44dfe648a01a436f5b7e280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 9
+  type: 6
   isPlaced: 0
 --- !u!114 &5859537274889344504
 MonoBehaviour:
@@ -275,3 +276,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sittingOnIngredient: 0
   inBurgerTrigger: 0
+--- !u!114 &-7897478753803526976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5282540862284528205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f46f9a746807654889326956d3bec63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  originSpawner: {fileID: 0}
