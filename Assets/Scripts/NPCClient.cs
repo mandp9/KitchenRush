@@ -17,6 +17,13 @@ public class NPCClient : MonoBehaviour
     private float pacienciaActual;
     private bool esperando = false;
     private EstadoPaciencia estadoActual;
+    // private bool yendose = false;
+
+    [Header("Puntuaciones")]
+    public int puntosSatisfecho = 30;
+    public int puntosOk = 20;
+    public int puntosIncorrecto = -10;
+    public int puntosTimeout = -20;
 
     [Header("Pedido")]
     public Order currentOrder;
@@ -104,17 +111,27 @@ public class NPCClient : MonoBehaviour
 
     public void RecibirBurger(BurgerController burger)
     {
+        // remove collider
+        Destroy(this.gameObject.GetComponent<BoxCollider>());
+
         // give burger to npc
         burger.gameObject.transform.parent = this.transform;
 
         if (EsPedidoCorrecto(burger))
         {
             Debug.Log("Pedido correcto");
+
+            if (estadoActual == EstadoPaciencia.Tranquilo)
+                ScoreController.instance.score += puntosSatisfecho;
+            else
+                ScoreController.instance.score += puntosOk;
+
             Invoke("Irse", 1);
         }
         else
         {
             Debug.Log("Pedido incorrecto");
+            ScoreController.instance.score += puntosIncorrecto;
             Invoke("Irse", 1);
         }
     }
@@ -195,6 +212,7 @@ public class NPCClient : MonoBehaviour
 
             case EstadoPaciencia.Harto:
                 Debug.Log("Im fed up of waiting");
+                ScoreController.instance.score += puntosTimeout;
                 Irse();
                 break;
         }
