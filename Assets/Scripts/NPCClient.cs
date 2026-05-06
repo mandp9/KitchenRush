@@ -18,7 +18,6 @@ public class NPCClient : MonoBehaviour
     private float pacienciaActual;
     private bool esperando = false;
     private EstadoPaciencia estadoActual;
-    // private bool yendose = false;
 
     [Header("Puntuaciones")]
     public int puntosSatisfecho = 30;
@@ -232,9 +231,9 @@ public class NPCClient : MonoBehaviour
             Debug.Log("✅ Pedido COMPLETO y CORRECTO");
 
             if (estadoActual == EstadoPaciencia.Tranquilo)
-                ScoreController.instance.score += puntosSatisfecho;
+                ScoreController.instance.UpdateScore(puntosSatisfecho);
             else
-                ScoreController.instance.score += puntosOk;
+                ScoreController.instance.UpdateScore(puntosOk);
         }
         else
         {
@@ -242,7 +241,7 @@ public class NPCClient : MonoBehaviour
             Destroy(this.gameObject.GetComponent<BoxCollider>());
 
             Debug.Log("❌ Pedido COMPLETO pero INCORRECTO");
-            ScoreController.instance.score += puntosIncorrecto;
+            ScoreController.instance.UpdateScore(puntosIncorrecto);
         }
 
         Invoke("Irse", 1);
@@ -366,7 +365,7 @@ public class NPCClient : MonoBehaviour
 
             case EstadoPaciencia.Harto:
                 Debug.Log("Im fed up of waiting");
-                ScoreController.instance.score += puntosTimeout;
+                ScoreController.instance.UpdateScore(puntosTimeout);
                 Irse();
                 break;
         }
