@@ -282,8 +282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a56421a23efcc42a3b0ee89f21bf5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ingredients: []
-  pattyCookTime: 0
+  ingredients: 
 --- !u!114 &1452193267944210512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,7 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ffae5b3e44dfe648a01a436f5b7e280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 5
+  type: 99
   isPlaced: 0
 --- !u!114 &-6650369347005814899
 MonoBehaviour:

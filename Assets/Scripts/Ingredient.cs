@@ -2,13 +2,15 @@ using UnityEngine;
 
 public enum IngredientType
 {
-    Meat,
+    Meat,     // 0
+    Tomato,   // 1
+    BaseBread = 99,
+    TopBread  = 100,
+    // put unimplemented ingredients here
     Lettuce,
-    Tomato,
     Onion,
     Cheese,
-    BaseBread,
-    TopBread,
+    Ketchup,
     fries
 }
 

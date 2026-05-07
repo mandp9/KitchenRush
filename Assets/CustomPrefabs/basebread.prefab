@@ -353,9 +353,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ffae5b3e44dfe648a01a436f5b7e280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 5
+  type: 99
   isPlaced: 0
-  burgerPrefab: {fileID: 1336386138831601191, guid: 221727ba24fb939418ba292ee4259e22, type: 3}
 --- !u!1 &4526073893505722493 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -6501760673133764168, guid: b2d9cc403a48ec442b0a13580f97362a, type: 3}
@@ -375,4 +374,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 5
   isPlaced: 0
-  burgerPrefab: {fileID: 0}

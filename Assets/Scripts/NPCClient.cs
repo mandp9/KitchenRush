@@ -127,27 +127,43 @@ public class NPCClient : MonoBehaviour
         }
     }
 
+    private Order GenerateOrder()
+    {
+        Order newOrder = new();
+        int ingredientCount = 2;
+
+        // choose patty doneness (rare or well done)
+        newOrder.requiredCookState = (CookState) Random.Range(1, 3);
+
+        // choose ingredient count (2 to 5, including top bun)
+        ingredientCount = Random.Range(2, 6);
+        newOrder.requiredIngredients = new List<IngredientType>()
+        {
+                IngredientType.TopBread,
+                IngredientType.Meat
+        };
+
+        // choose other ingredients
+        for (int i = 2; i < ingredientCount; i++)
+            // rember to update range when adding new ingredients!
+            newOrder.requiredIngredients.Add((IngredientType) Random.Range(0, 2));
+
+        // choose extras
+        newOrder.requiresFries = Random.Range(0, 2) == 1;
+        //newOrder.requiresDrink = Random.Range(0, 1) == 1;
+        newOrder.requiresDrink = false;
+
+        return newOrder;
+    }
+
     void Pedir()
     {
         anim.SetBool("isOrdering", true);
-         Invoke(nameof(PararHablar), 2.5f);
+        Invoke(nameof(PararHablar), 2.5f);
         timerInicio = 0f;
         pacienciaActual = pacienciaMax;
 
-        currentOrder = new Order();
-        currentOrder.requiredCookState = CookState.Rare;
-
-        currentOrder.requiredIngredients = new List<IngredientType>()
-        {
-            IngredientType.TopBread,
-            IngredientType.Meat,
-            IngredientType.Tomato
-        };
-
-        currentOrder.requiresFries = true;
-        currentOrder.requiresDrink = false;
-
-        Debug.Log("Pedido: Rare + Tomato + Fries");
+        currentOrder = GenerateOrder();
 
         esperando = true;
 
@@ -160,6 +176,8 @@ public class NPCClient : MonoBehaviour
 
         foreach (var ing in currentOrder.requiredIngredients)
         {
+            // skip listing top bun
+            if (ing == IngredientType.TopBread) continue;
             texto += "- " + ing + "\n";
         }
 
@@ -173,7 +191,6 @@ public class NPCClient : MonoBehaviour
     {
         burgerRecibida = burger;
         // give burger to npc
-        // burger.gameObject.transform.parent = this.transform;
         burger.transform.parent = this.transform;
 
         Debug.Log("Burger recibida");
