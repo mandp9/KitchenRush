@@ -4,12 +4,12 @@ public enum IngredientType
 {
     Meat,     // 0
     Tomato,   // 1
+    Lettuce,  // 2
+    Onion,    // 3
+    Cheese,   // 4
     BaseBread = 99,
     TopBread  = 100,
     // put unimplemented ingredients here
-    Lettuce,
-    Onion,
-    Cheese,
     Ketchup,
     fries
 }

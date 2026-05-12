@@ -146,7 +146,7 @@ public class NPCClient : MonoBehaviour
         // choose other ingredients
         for (int i = 2; i < ingredientCount; i++)
             // rember to update range when adding new ingredients!
-            newOrder.requiredIngredients.Add((IngredientType) Random.Range(0, 2));
+            newOrder.requiredIngredients.Add((IngredientType) Random.Range(0, 5));
 
         // choose extras
         newOrder.requiresFries = Random.Range(0, 2) == 1;
