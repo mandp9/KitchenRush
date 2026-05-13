@@ -5,11 +5,11 @@ using System.Collections.Generic;
 public class BurgerController : MonoBehaviour
 {
     public List<IngredientType> ingredients = new();
-    public CookState? pattyCookState = null;
+    public CookState pattyCookState;
 
     private List<GameObject> ingredientObjects = new();
+    private List<CookState> cookStates = new();
     private GameObject newIngredient;
-    private float pattyCookTime = 0f;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -49,14 +49,17 @@ public class BurgerController : MonoBehaviour
             ingredient.tag = "Untagged";
             ingredient.transform.parent = this.transform;
 
+            // check patty cook states; all patties must be cooked to the same state
             if (ingredient.GetComponent<temporaryCookableController>() != null)
-                if (ingredient.GetComponent<temporaryCookableController>().cookTime > pattyCookTime)
-                {
-                    pattyCookTime = ingredient.GetComponent<temporaryCookableController>().cookTime;
-                    pattyCookState = ingredient.GetComponent<temporaryCookableController>().GetCookState();
-                }
-
-            Destroy(this.GetComponent<BoxCollider>());
+                cookStates.Add(ingredient.GetComponent<temporaryCookableController>().GetCookState());
         }
+
+        // if all the patties are cooked to the same state, set the burger cook state to it
+        // i.e. if all cook states are equal to the first cook state
+        if (cookStates.FindAll(cookState => cookState == cookStates[0]).Count == cookStates.Count)
+            pattyCookState = cookStates[0];
+
+        // remove base bread's trigger collider
+        Destroy(this.GetComponent<BoxCollider>());
     }
 }
