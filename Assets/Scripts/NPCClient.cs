@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
@@ -29,7 +30,7 @@ public class NPCClient : MonoBehaviour
     public Order currentOrder;
 
     private BurgerController burgerRecibida = null;
-    private bool friesRecibidas = false;
+    private GameObject friesRecibidas = null;
 
     [Header("Efectos")]
     public GameObject efectoHumo;
@@ -190,8 +191,6 @@ public class NPCClient : MonoBehaviour
     public void RecibirBurger(BurgerController burger)
     {
         burgerRecibida = burger;
-        // give burger to npc
-        burger.transform.parent = this.transform;
 
         Debug.Log("Burger recibida");
 
@@ -200,8 +199,7 @@ public class NPCClient : MonoBehaviour
 
     public void RecibirFries(GameObject fries)
     {
-        friesRecibidas = true;
-        fries.transform.parent = this.transform;
+        friesRecibidas = fries;
 
         Debug.Log("Fries recibidas");
 
@@ -229,13 +227,13 @@ public class NPCClient : MonoBehaviour
     void ComprobarPedidoCompleto()
     {
         if (burgerRecibida == null) return;
-        if (currentOrder.requiresFries && !friesRecibidas) return;
+        if (currentOrder.requiresFries && friesRecibidas == null) return;
 
         esperando = false;
 
         bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
 
-        if (currentOrder.requiresFries && !friesRecibidas)
+        if (currentOrder.requiresFries && friesRecibidas == null)
         {
             pedidoCorrecto = false;
         }
@@ -261,7 +259,7 @@ public class NPCClient : MonoBehaviour
             ScoreController.instance.UpdateScore(puntosIncorrecto);
         }
 
-        Invoke("Irse", 1);
+        StartCoroutine(Irse(pedidoCorrecto));
     }
 
    bool EsPedidoCorrecto(BurgerController burger)
@@ -328,17 +326,25 @@ public class NPCClient : MonoBehaviour
         return true;
     }
 
-    void Irse()
+    IEnumerator Irse(bool takeOrder)
     {
         esperando = false;
         anim.SetBool("isOrdering", false);
-        OrderUIManager ui = FindObjectOfType<OrderUIManager>();
 
+        yield return new WaitForSeconds(1f);
+
+        OrderUIManager ui = FindObjectOfType<OrderUIManager>();
         if (miSlotUI != -1)
             ui.LiberarPedido(miSlotUI);
             
         GameObject humo = Instantiate(efectoHumo, anim.transform.position, Quaternion.identity);
         Destroy(humo, 0.5f);
+
+        if (takeOrder)
+        {
+            if (burgerRecibida != null) Destroy(burgerRecibida.gameObject);
+            if (friesRecibidas != null) Destroy(friesRecibidas);
+        }
 
         Destroy(gameObject);
     }
@@ -383,7 +389,7 @@ public class NPCClient : MonoBehaviour
             case EstadoPaciencia.Harto:
                 Debug.Log("Im fed up of waiting");
                 ScoreController.instance.UpdateScore(puntosTimeout);
-                Irse();
+                StartCoroutine(Irse(false));
                 break;
         }
     }
