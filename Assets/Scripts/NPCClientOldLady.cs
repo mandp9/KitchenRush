@@ -78,9 +78,13 @@ public class NPCClientOldLady : MonoBehaviour
 
         estadoMovimiento = EstadoMovimiento.EsperandoParaSalir;
 
+        if (barraPaciencia != null)
+        {
+            barraPaciencia.transform.parent.gameObject.SetActive(false);
+        }
+
         Invoke(nameof(EmpezarAMoverse), delayAntesDeIr);
     }
-
     void EmpezarAMoverse()
     {
         estadoMovimiento = EstadoMovimiento.YendoAWaypoint;
@@ -200,6 +204,11 @@ public class NPCClientOldLady : MonoBehaviour
 
         Invoke(nameof(PararHablar), 2.5f);
 
+        if (barraPaciencia != null)
+        {
+            barraPaciencia.transform.parent.gameObject.SetActive(true);
+        }
+
         timerInicio = 0f;
 
         pacienciaActual = pacienciaMax;
@@ -225,7 +234,20 @@ public class NPCClientOldLady : MonoBehaviour
         if (currentOrder.requiresFries)
             texto += "Fries\n";
 
-        miSlotUI = ui.AsignarPedido(texto);
+        miSlotUI = ui.ReservarSlot();
+
+        if (miSlotUI == -1)
+        {
+            Debug.Log("No hay hueco libre");
+
+            esperando = false;
+
+            StartCoroutine(Irse(false));
+
+            return;
+        }
+
+        ui.EscribirPedido(miSlotUI, texto);
     }
 
     public void RecibirBurger(BurgerController burger)
@@ -334,7 +356,10 @@ public class NPCClientOldLady : MonoBehaviour
             anim.transform.position,
             Quaternion.identity
         );
-
+        if (barraPaciencia != null)
+        {
+            barraPaciencia.transform.parent.gameObject.SetActive(false);
+        }
         Destroy(humo, 0.5f);
 
         if (takeOrder)

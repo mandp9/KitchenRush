@@ -6,18 +6,30 @@ using UnityEngine.UI;
 
 public class NPCClient : MonoBehaviour
 {
+    [Header("Slots Barra")]
+    public Transform[] puntosBarra;
+
+    [Header("Waypoint Inicial")]
     public Transform destino;
+
     private NavMeshAgent agent;
     private Animator anim;
+
     private bool haLlegado = false;
+    private bool slotReservado = false;
+    private bool haEmpezadoAMoverse = false;
+
     private int miSlotUI = -1;
+
     [Header("Paciencia")]
     public float delayAntesDeEsperar = 8f;
     private float timerInicio = 0f;
 
     public float pacienciaMax = 180f;
     private float pacienciaActual;
+
     private bool esperando = false;
+
     private EstadoPaciencia estadoActual;
 
     [Header("Puntuaciones")]
@@ -42,11 +54,11 @@ public class NPCClient : MonoBehaviour
     public Image barraPaciencia;
 
     [Header("Efecto Paciencia")]
-    public float umbralParpadeo = 0.3f; 
+    public float umbralParpadeo = 0.3f;
     public float velocidadParpadeo = 5f;
 
     private float tiempoParpadeo = 0f;
-    private bool haEmpezadoAMoverse = false;
+
     enum EstadoPaciencia
     {
         Tranquilo,
@@ -61,13 +73,24 @@ public class NPCClient : MonoBehaviour
 
         pacienciaActual = pacienciaMax;
 
+        if (barraPaciencia != null)
+        {
+            barraPaciencia.transform.parent.gameObject.SetActive(false);
+        }
+
         Invoke(nameof(EmpezarAMoverse), delayAntesDeIr);
     }
 
     void EmpezarAMoverse()
     {
-        agent.SetDestination(destino.position);
         haEmpezadoAMoverse = true;
+
+        agent.isStopped = false;
+
+        anim.SetBool("isWalking", true);
+
+        // ir al waypoint inicial
+        agent.SetDestination(destino.position);
     }
 
     void PararHablar()
@@ -77,18 +100,54 @@ public class NPCClient : MonoBehaviour
 
     void Update()
     {
-        if (!haLlegado)
-        {
-            anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f);
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f);
 
-            if (haEmpezadoAMoverse && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance && agent.velocity.magnitude < 0.1f)
+        // SOLO después de empezar realmente
+        if (haEmpezadoAMoverse &&
+            !haLlegado &&
+            !agent.pathPending &&
+            agent.remainingDistance <= agent.stoppingDistance &&
+            agent.velocity.magnitude < 0.1f)
+        {
+            OrderUIManager ui = FindObjectOfType<OrderUIManager>();
+
+            // aún no tiene slot
+            if (!slotReservado)
             {
-                haLlegado = true;
-                anim.SetBool("isWalking", false);
-                Pedir();
+                miSlotUI = ui.ReservarSlot();
+
+                // no hay hueco todavía
+                if (miSlotUI == -1)
+                {
+                    anim.SetBool("isWalking", false);
+                    return;
+                }
+
+                slotReservado = true;
+
+                // ir al slot concreto
+                destino = puntosBarra[miSlotUI];
+
+                agent.isStopped = false;
+
+                anim.SetBool("isWalking", true);
+
+                agent.SetDestination(destino.position);
+
+                return;
             }
+
+            // llegó al slot final
+            haLlegado = true;
+
+            agent.isStopped = true;
+
+            anim.SetBool("isWalking", false);
+
+            Pedir();
         }
 
+        // paciencia
         if (esperando)
         {
             timerInicio += Time.deltaTime;
@@ -96,28 +155,28 @@ public class NPCClient : MonoBehaviour
             if (timerInicio >= delayAntesDeEsperar)
             {
                 pacienciaActual -= Time.deltaTime;
+
                 pacienciaActual = Mathf.Max(pacienciaActual, 0f);
+
                 EvaluarPaciencia();
             }
         }
+
+        // barra paciencia
         if (barraPaciencia != null)
         {
             float ratio = pacienciaActual / pacienciaMax;
 
-            // 🔋 cantidad
             barraPaciencia.fillAmount = ratio;
 
-            // 🎨 color verde → rojo
             Color colorBase = Color.Lerp(Color.red, Color.green, ratio);
 
-            // ⚠️ PARPADEO
             if (ratio <= umbralParpadeo)
             {
                 tiempoParpadeo += Time.deltaTime * velocidadParpadeo;
 
                 float t = (Mathf.Sin(tiempoParpadeo) + 1f) * 0.5f;
 
-                // mezcla con blanco para parpadeo
                 barraPaciencia.color = Color.Lerp(colorBase, Color.white, t);
             }
             else
@@ -131,27 +190,23 @@ public class NPCClient : MonoBehaviour
     private Order GenerateOrder()
     {
         Order newOrder = new();
-        int ingredientCount = 2;
 
-        // choose patty doneness (rare or well done)
-        newOrder.requiredCookState = (CookState) Random.Range(1, 3);
+        int ingredientCount = Random.Range(2, 6);
 
-        // choose ingredient count (2 to 5, including top bun)
-        ingredientCount = Random.Range(2, 6);
+        newOrder.requiredCookState = (CookState)Random.Range(1, 3);
+
         newOrder.requiredIngredients = new List<IngredientType>()
         {
-                IngredientType.TopBread,
-                IngredientType.Meat
+            IngredientType.TopBread,
+            IngredientType.Meat
         };
 
-        // choose other ingredients
         for (int i = 2; i < ingredientCount; i++)
-            // rember to update range when adding new ingredients!
-            newOrder.requiredIngredients.Add((IngredientType) Random.Range(0, 5));
+        {
+            newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
+        }
 
-        // choose extras
         newOrder.requiresFries = Random.Range(0, 2) == 1;
-        //newOrder.requiresDrink = Random.Range(0, 1) == 1;
         newOrder.requiresDrink = false;
 
         return newOrder;
@@ -160,8 +215,16 @@ public class NPCClient : MonoBehaviour
     void Pedir()
     {
         anim.SetBool("isOrdering", true);
+
         Invoke(nameof(PararHablar), 2.5f);
+        
+        if (barraPaciencia != null)
+        {
+            barraPaciencia.transform.parent.gameObject.SetActive(true);
+        }
+
         timerInicio = 0f;
+
         pacienciaActual = pacienciaMax;
 
         currentOrder = GenerateOrder();
@@ -177,15 +240,15 @@ public class NPCClient : MonoBehaviour
 
         foreach (var ing in currentOrder.requiredIngredients)
         {
-            // skip listing top bun
             if (ing == IngredientType.TopBread) continue;
+
             texto += "- " + ing + "\n";
         }
 
         if (currentOrder.requiresFries)
             texto += "Fries\n";
 
-        miSlotUI = ui.AsignarPedido(texto);
+        ui.EscribirPedido(miSlotUI, texto);
     }
 
     public void RecibirBurger(BurgerController burger)
@@ -211,6 +274,7 @@ public class NPCClient : MonoBehaviour
         if (!esperando) return;
 
         BurgerController burger = other.GetComponent<BurgerController>();
+
         if (burger != null && burger.ingredients.Count > 0)
         {
             RecibirBurger(burger);
@@ -227,23 +291,16 @@ public class NPCClient : MonoBehaviour
     void ComprobarPedidoCompleto()
     {
         if (burgerRecibida == null) return;
+
         if (currentOrder.requiresFries && friesRecibidas == null) return;
 
         esperando = false;
 
         bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
 
-        if (currentOrder.requiresFries && friesRecibidas == null)
-        {
-            pedidoCorrecto = false;
-        }
-
         if (pedidoCorrecto)
         {
-            // remove collider
-            Destroy(this.gameObject.GetComponent<BoxCollider>());
-
-            Debug.Log("✅ Pedido COMPLETO y CORRECTO");
+            Destroy(GetComponent<BoxCollider>());
 
             if (estadoActual == EstadoPaciencia.Tranquilo)
                 ScoreController.instance.UpdateScore(puntosSatisfecho);
@@ -252,63 +309,23 @@ public class NPCClient : MonoBehaviour
         }
         else
         {
-            // remove collider
-            Destroy(this.gameObject.GetComponent<BoxCollider>());
+            Destroy(GetComponent<BoxCollider>());
 
-            Debug.Log("❌ Pedido COMPLETO pero INCORRECTO");
             ScoreController.instance.UpdateScore(puntosIncorrecto);
         }
 
         StartCoroutine(Irse(pedidoCorrecto));
     }
 
-   bool EsPedidoCorrecto(BurgerController burger)
+    bool EsPedidoCorrecto(BurgerController burger)
     {
-        Debug.Log("========== DEBUG PEDIDO ==========");
-
-        Debug.Log("Burger ingredientes: " + string.Join(", ", burger.ingredients));
-
-        Debug.Log("Pedido ingredientes: " + string.Join(", ", currentOrder.requiredIngredients));
-
-        Debug.Log("Cook burger: " + burger.pattyCookState);
-        Debug.Log("Cook pedido: " + currentOrder.requiredCookState);
-
-        foreach (IngredientType ing in burger.ingredients)
-        {
-            if (currentOrder.requiredIngredients.Contains(ing))
-            {
-                Debug.Log("✔ Ingrediente correcto: " + ing);
-            }
-            else if (ing == IngredientType.BaseBread)
-            {
-                Debug.Log("➖ BaseBread (ignorado)");
-            }
-            else
-            {
-                Debug.Log("❌ Ingrediente EXTRA: " + ing);
-            }
-        }
-
-        foreach (IngredientType ing in currentOrder.requiredIngredients)
-        {
-            if (!burger.ingredients.Contains(ing))
-            {
-                Debug.Log("❌ Falta ingrediente: " + ing);
-            }
-        }
-
         if (burger.pattyCookState != currentOrder.requiredCookState)
-        {
-            Debug.Log("❌ ERROR: Cocción incorrecta");
             return false;
-        }
 
         foreach (IngredientType ing in currentOrder.requiredIngredients)
         {
             if (!burger.ingredients.Contains(ing))
-            {
                 return false;
-            }
         }
 
         foreach (IngredientType ing in burger.ingredients)
@@ -316,12 +333,8 @@ public class NPCClient : MonoBehaviour
             if (ing == IngredientType.BaseBread) continue;
 
             if (!currentOrder.requiredIngredients.Contains(ing))
-            {
                 return false;
-            }
         }
-
-        Debug.Log("✅ RESULTADO: BURGER CORRECTA");
 
         return true;
     }
@@ -329,23 +342,36 @@ public class NPCClient : MonoBehaviour
     IEnumerator Irse(bool takeOrder)
     {
         esperando = false;
+
         anim.SetBool("isOrdering", false);
 
         yield return new WaitForSeconds(1f);
 
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
+
         if (miSlotUI != -1)
             ui.LiberarPedido(miSlotUI);
-            
-        GameObject humo = Instantiate(efectoHumo, anim.transform.position, Quaternion.identity);
+
+        GameObject humo = Instantiate(
+            efectoHumo,
+            anim.transform.position,
+            Quaternion.identity
+        );
+
         Destroy(humo, 0.5f);
 
         if (takeOrder)
         {
-            if (burgerRecibida != null) Destroy(burgerRecibida.gameObject);
-            if (friesRecibidas != null) Destroy(friesRecibidas);
-        }
+            if (burgerRecibida != null)
+                Destroy(burgerRecibida.gameObject);
 
+            if (friesRecibidas != null)
+                Destroy(friesRecibidas);
+        }
+        if (barraPaciencia != null)
+        {
+            barraPaciencia.transform.parent.gameObject.SetActive(false);
+        }
         Destroy(gameObject);
     }
 
@@ -388,7 +414,9 @@ public class NPCClient : MonoBehaviour
 
             case EstadoPaciencia.Harto:
                 Debug.Log("Im fed up of waiting");
+
                 ScoreController.instance.UpdateScore(puntosTimeout);
+
                 StartCoroutine(Irse(false));
                 break;
         }
