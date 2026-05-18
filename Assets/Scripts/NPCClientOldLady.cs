@@ -10,6 +10,9 @@ public class NPCClientOldLady : MonoBehaviour
     public Transform destino;
     public Transform puntoIntermedio;
 
+    [Header("Bandejas")]
+    public TrayDelivery[] bandejas;
+
     private NavMeshAgent agent;
     private Animator anim;
 
@@ -36,6 +39,7 @@ public class NPCClientOldLady : MonoBehaviour
 
     private BurgerController burgerRecibida = null;
     private GameObject friesRecibidas = null;
+    private Drink bebidaRecibida = null;
 
     [Header("Efectos")]
     public GameObject efectoHumo;
@@ -104,7 +108,6 @@ public class NPCClientOldLady : MonoBehaviour
 
     void Update()
     {
-        // Llegó al waypoint
         if (estadoMovimiento == EstadoMovimiento.YendoAWaypoint &&
             !agent.pathPending &&
             agent.remainingDistance <= 0.15f)
@@ -120,7 +123,6 @@ public class NPCClientOldLady : MonoBehaviour
             return;
         }
 
-        // Llegó a barra
         if (estadoMovimiento == EstadoMovimiento.YendoABarra &&
             !agent.pathPending &&
             agent.remainingDistance <= 0.15f)
@@ -134,7 +136,6 @@ public class NPCClientOldLady : MonoBehaviour
             Pedir();
         }
 
-        // Paciencia
         if (esperando)
         {
             timerInicio += Time.deltaTime;
@@ -149,7 +150,6 @@ public class NPCClientOldLady : MonoBehaviour
             }
         }
 
-        // UI paciencia
         if (barraPaciencia != null)
         {
             float ratio = pacienciaActual / pacienciaMax;
@@ -193,8 +193,15 @@ public class NPCClientOldLady : MonoBehaviour
             newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
         }
 
-        newOrder.requiresFries = Random.Range(0, 2) == 1;
-        newOrder.requiresDrink = false;
+        newOrder.requiresFries = Random.value < 0.6f;
+
+        newOrder.requiresDrink = Random.value < 0.7f;
+
+        if (newOrder.requiresDrink)
+        {
+            newOrder.requiredDrink =
+                (DrinkType)Random.Range(0, 5);
+        }
 
         return newOrder;
     }
@@ -235,8 +242,16 @@ public class NPCClientOldLady : MonoBehaviour
         if (currentOrder.requiresFries)
             texto += "Fries\n";
 
+        if (currentOrder.requiresDrink)
+        {
+            texto += "Drink: " +
+                    currentOrder.requiredDrink + "\n";
+        }
+
         miSlotUI = ui.ReservarSlot();
 
+        bandejas[miSlotUI].LimpiarBandeja();
+        
         if (miSlotUI == -1)
         {
             Debug.Log("No hay hueco libre");
@@ -247,6 +262,8 @@ public class NPCClientOldLady : MonoBehaviour
 
             return;
         }
+
+        bandejas[miSlotUI].npcActual = this;
 
         ui.EscribirPedido(miSlotUI, texto);
     }
@@ -269,23 +286,13 @@ public class NPCClientOldLady : MonoBehaviour
         ComprobarPedidoCompleto();
     }
 
-    void OnTriggerEnter(Collider other)
+    public void RecibirDrink(Drink drink)
     {
-        if (!esperando) return;
+        bebidaRecibida = drink;
 
-        BurgerController burger = other.GetComponent<BurgerController>();
+        Debug.Log("Drink recibida");
 
-        if (burger != null && burger.ingredients.Count > 0)
-        {
-            RecibirBurger(burger);
-            return;
-        }
-
-        if (other.gameObject.name.Contains("frieswithcontainer"))
-        {
-            RecibirFries(other.gameObject);
-            return;
-        }
+        ComprobarPedidoCompleto();
     }
 
     void ComprobarPedidoCompleto()
@@ -294,9 +301,23 @@ public class NPCClientOldLady : MonoBehaviour
 
         if (currentOrder.requiresFries && friesRecibidas == null) return;
 
+        if (currentOrder.requiresDrink &&
+            bebidaRecibida == null)
+        {
+            return;
+        }
+
         esperando = false;
 
         bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
+
+        if (currentOrder.requiresDrink)
+        {
+            if (bebidaRecibida.type != currentOrder.requiredDrink)
+            {
+                pedidoCorrecto = false;
+            }
+        }
 
         if (pedidoCorrecto)
         {
@@ -353,7 +374,11 @@ public class NPCClientOldLady : MonoBehaviour
         {
             ui.LiberarPedido(miSlotUI);
 
-            miSlotUI = -1;
+            yield return new WaitForSeconds(0.1f);
+
+            bandejas[miSlotUI].LimpiarBandeja();
+
+            bandejas[miSlotUI].npcActual = null;
         }
 
         yield return new WaitForEndOfFrame();
@@ -380,6 +405,9 @@ public class NPCClientOldLady : MonoBehaviour
 
             if (friesRecibidas != null)
                 Destroy(friesRecibidas);
+
+            if (bebidaRecibida != null)
+                Destroy(bebidaRecibida.gameObject);
         }
 
         Destroy(gameObject);
