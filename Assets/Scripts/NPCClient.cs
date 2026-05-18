@@ -254,11 +254,9 @@ public class NPCClient : MonoBehaviour
 
         if (currentOrder.requiresFries)
             texto += "Fries\n";
+
         if (currentOrder.requiresDrink)
-        {
-            texto += "Drink: " +
-                    currentOrder.requiredDrink + "\n";
-        }
+            texto += "Drink: " + currentOrder.requiredDrink + "\n";
 
         ui.EscribirPedido(miSlotUI, texto);
     }
@@ -295,12 +293,9 @@ public class NPCClient : MonoBehaviour
         bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
        
         if (currentOrder.requiresDrink)
-        {
             if (bebidaRecibida.type != currentOrder.requiredDrink)
-            {
                 pedidoCorrecto = false;
-            }
-        }
+        
         if (pedidoCorrecto)
         {
             Destroy(GetComponent<BoxCollider>());
