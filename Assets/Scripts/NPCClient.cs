@@ -9,6 +9,9 @@ public class NPCClient : MonoBehaviour
     [Header("Slots Barra")]
     public Transform[] puntosBarra;
 
+    [Header("Bandejas")]
+    public TrayDelivery[] bandejas;
+
     [Header("Puntos Cola")]
     public Transform[] puntosCola;
 
@@ -50,6 +53,7 @@ public class NPCClient : MonoBehaviour
 
     private BurgerController burgerRecibida = null;
     private GameObject friesRecibidas = null;
+    private Drink bebidaRecibida = null;
 
     [Header("Efectos")]
     public GameObject efectoHumo;
@@ -65,6 +69,7 @@ public class NPCClient : MonoBehaviour
     public float velocidadParpadeo = 5f;
 
     private float tiempoParpadeo = 0f;
+    
 
     enum EstadoPaciencia
     {
@@ -202,8 +207,14 @@ public class NPCClient : MonoBehaviour
             newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
         }
 
-        newOrder.requiresFries = Random.Range(0, 2) == 1;
-        newOrder.requiresDrink = false;
+        newOrder.requiresFries = Random.value < 0.6f;
+        newOrder.requiresDrink = Random.value < 0.7f;
+
+        if (newOrder.requiresDrink)
+        {
+            newOrder.requiredDrink =
+                (DrinkType)Random.Range(0, 5);
+        }
 
         return newOrder;
     }
@@ -243,6 +254,11 @@ public class NPCClient : MonoBehaviour
 
         if (currentOrder.requiresFries)
             texto += "Fries\n";
+        if (currentOrder.requiresDrink)
+        {
+            texto += "Drink: " +
+                    currentOrder.requiredDrink + "\n";
+        }
 
         ui.EscribirPedido(miSlotUI, texto);
     }
@@ -265,35 +281,30 @@ public class NPCClient : MonoBehaviour
         ComprobarPedidoCompleto();
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (!esperando) return;
-
-        BurgerController burger = other.GetComponent<BurgerController>();
-
-        if (burger != null && burger.ingredients.Count > 0)
-        {
-            RecibirBurger(burger);
-            return;
-        }
-
-        if (other.gameObject.name.Contains("frieswithcontainer"))
-        {
-            RecibirFries(other.gameObject);
-            return;
-        }
-    }
-
+    
     void ComprobarPedidoCompleto()
     {
         if (burgerRecibida == null) return;
 
         if (currentOrder.requiresFries && friesRecibidas == null) return;
 
+        if (currentOrder.requiresDrink &&
+            bebidaRecibida == null)
+        {
+            return;
+        }
+
         esperando = false;
 
         bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
-
+       
+        if (currentOrder.requiresDrink)
+        {
+            if (bebidaRecibida.type != currentOrder.requiredDrink)
+            {
+                pedidoCorrecto = false;
+            }
+        }
         if (pedidoCorrecto)
         {
             Destroy(GetComponent<BoxCollider>());
@@ -346,7 +357,13 @@ public class NPCClient : MonoBehaviour
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
 
         if (miSlotUI != -1)
+        {
             ui.LiberarPedido(miSlotUI);
+
+            bandejas[miSlotUI].LimpiarBandeja();
+
+            bandejas[miSlotUI].npcActual = null;
+        }
         slotReservado = false;
         QueueManager.instance.ActualizarCola();
         GameObject humo = Instantiate(
@@ -364,6 +381,9 @@ public class NPCClient : MonoBehaviour
 
             if (friesRecibidas != null)
                 Destroy(friesRecibidas);
+            
+            if (bebidaRecibida != null)
+                Destroy(bebidaRecibida.gameObject);
         }
 
         if (barraPaciencia != null)
@@ -441,6 +461,10 @@ public class NPCClient : MonoBehaviour
 
         miSlotUI = slot;
 
+        bandejas[slot].LimpiarBandeja();
+
+        bandejas[slot].npcActual = this;
+
         slotReservado = true;
 
         yendoABarra = true;
@@ -454,5 +478,13 @@ public class NPCClient : MonoBehaviour
         agent.SetDestination(destino.position);
 
         anim.SetBool("isWalking", true);
+    }
+    public void RecibirDrink(Drink drink)
+    {
+        bebidaRecibida = drink;
+
+        Debug.Log("Drink recibida");
+
+        ComprobarPedidoCompleto();
     }
 }
