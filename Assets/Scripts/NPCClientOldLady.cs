@@ -85,6 +85,7 @@ public class NPCClientOldLady : MonoBehaviour
 
         Invoke(nameof(EmpezarAMoverse), delayAntesDeIr);
     }
+
     void EmpezarAMoverse()
     {
         estadoMovimiento = EstadoMovimiento.YendoAWaypoint;
@@ -349,17 +350,25 @@ public class NPCClientOldLady : MonoBehaviour
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
 
         if (miSlotUI != -1)
+        {
             ui.LiberarPedido(miSlotUI);
+
+            miSlotUI = -1;
+        }
+
+        StartCoroutine(ActualizarColaDelayed());
 
         GameObject humo = Instantiate(
             efectoHumo,
             anim.transform.position,
             Quaternion.identity
         );
+
         if (barraPaciencia != null)
         {
             barraPaciencia.transform.parent.gameObject.SetActive(false);
         }
+
         Destroy(humo, 0.5f);
 
         if (takeOrder)
@@ -372,6 +381,18 @@ public class NPCClientOldLady : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    IEnumerator ActualizarColaDelayed()
+    {
+        yield return null;
+
+        QueueManager.instance.ActualizarCola();
+
+        if (QueueManager.instance.cola.Count > 0)
+        {
+            QueueManager.instance.cola[0].IntentarIrABarra();
+        }
     }
 
     void EvaluarPaciencia()
@@ -413,6 +434,8 @@ public class NPCClientOldLady : MonoBehaviour
 
             case EstadoPaciencia.Harto:
                 Debug.Log("Im fed up of waiting");
+
+                esperando = false;
 
                 ScoreController.instance.UpdateScore(puntosTimeout);
 

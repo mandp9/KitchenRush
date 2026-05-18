@@ -9,6 +9,9 @@ public class NPCClient : MonoBehaviour
     [Header("Slots Barra")]
     public Transform[] puntosBarra;
 
+    [Header("Puntos Cola")]
+    public Transform[] puntosCola;
+
     [Header("Waypoint Inicial")]
     public Transform destino;
 
@@ -18,8 +21,12 @@ public class NPCClient : MonoBehaviour
     private bool haLlegado = false;
     private bool slotReservado = false;
     private bool haEmpezadoAMoverse = false;
+    private bool yendoABarra = false;
 
     private int miSlotUI = -1;
+
+    [HideInInspector]
+    public int posicionCola;
 
     [Header("Paciencia")]
     public float delayAntesDeEsperar = 8f;
@@ -78,19 +85,33 @@ public class NPCClient : MonoBehaviour
             barraPaciencia.transform.parent.gameObject.SetActive(false);
         }
 
+        agent.isStopped = true;
+
         Invoke(nameof(EmpezarAMoverse), delayAntesDeIr);
     }
 
     void EmpezarAMoverse()
     {
         haEmpezadoAMoverse = true;
+        QueueManager.instance.EntrarCola(this);
+        ActualizarPosicionCola();
+    }
 
-        agent.isStopped = false;
+    public void ActualizarPosicionCola()
+    {
+        if (slotReservado)
+            return;
 
-        anim.SetBool("isWalking", true);
+        haLlegado = false;
 
-        // ir al waypoint inicial
-        agent.SetDestination(destino.position);
+        if (posicionCola >= 0 && posicionCola < puntosCola.Length)
+        {
+            agent.isStopped = false;
+
+            anim.SetBool("isWalking", true);
+
+            agent.SetDestination(puntosCola[posicionCola].position);
+        }
     }
 
     void PararHablar()
@@ -102,42 +123,17 @@ public class NPCClient : MonoBehaviour
     {
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f);
 
-        // SOLO después de empezar realmente
-        if (haEmpezadoAMoverse &&
-            !haLlegado &&
+        if (!haEmpezadoAMoverse)
+            return;
+
+        // SOLO cuando va hacia barra
+        if (yendoABarra &&
             !agent.pathPending &&
             agent.remainingDistance <= agent.stoppingDistance &&
             agent.velocity.magnitude < 0.1f)
         {
-            OrderUIManager ui = FindObjectOfType<OrderUIManager>();
+            yendoABarra = false;
 
-            // aún no tiene slot
-            if (!slotReservado)
-            {
-                miSlotUI = ui.ReservarSlot();
-
-                // no hay hueco todavía
-                if (miSlotUI == -1)
-                {
-                    anim.SetBool("isWalking", false);
-                    return;
-                }
-
-                slotReservado = true;
-
-                // ir al slot concreto
-                destino = puntosBarra[miSlotUI];
-
-                agent.isStopped = false;
-
-                anim.SetBool("isWalking", true);
-
-                agent.SetDestination(destino.position);
-
-                return;
-            }
-
-            // llegó al slot final
             haLlegado = true;
 
             agent.isStopped = true;
@@ -217,7 +213,7 @@ public class NPCClient : MonoBehaviour
         anim.SetBool("isOrdering", true);
 
         Invoke(nameof(PararHablar), 2.5f);
-        
+
         if (barraPaciencia != null)
         {
             barraPaciencia.transform.parent.gameObject.SetActive(true);
@@ -351,7 +347,8 @@ public class NPCClient : MonoBehaviour
 
         if (miSlotUI != -1)
             ui.LiberarPedido(miSlotUI);
-
+        slotReservado = false;
+        QueueManager.instance.ActualizarCola();
         GameObject humo = Instantiate(
             efectoHumo,
             anim.transform.position,
@@ -368,10 +365,12 @@ public class NPCClient : MonoBehaviour
             if (friesRecibidas != null)
                 Destroy(friesRecibidas);
         }
+
         if (barraPaciencia != null)
         {
             barraPaciencia.transform.parent.gameObject.SetActive(false);
         }
+
         Destroy(gameObject);
     }
 
@@ -415,10 +414,36 @@ public class NPCClient : MonoBehaviour
             case EstadoPaciencia.Harto:
                 Debug.Log("Im fed up of waiting");
 
+                esperando = false;
+
                 ScoreController.instance.UpdateScore(puntosTimeout);
 
                 StartCoroutine(Irse(false));
                 break;
         }
+    }
+    public void IntentarIrABarra()
+    {
+        OrderUIManager ui = FindObjectOfType<OrderUIManager>();
+
+        int slot = ui.ReservarSlot();
+
+        if (slot == -1) return;
+
+        miSlotUI = slot;
+
+        slotReservado = true;
+
+        yendoABarra = true;
+
+        QueueManager.instance.SalirCola(this);
+
+        destino = puntosBarra[slot];
+
+        agent.isStopped = false;
+
+        agent.SetDestination(destino.position);
+
+        anim.SetBool("isWalking", true);
     }
 }
