@@ -284,15 +284,11 @@ public class NPCClient : MonoBehaviour
     
     void ComprobarPedidoCompleto()
     {
+        if (!esperando) return;
+
         if (burgerRecibida == null) return;
-
         if (currentOrder.requiresFries && friesRecibidas == null) return;
-
-        if (currentOrder.requiresDrink &&
-            bebidaRecibida == null)
-        {
-            return;
-        }
+        if (currentOrder.requiresDrink && bebidaRecibida == null) return;
 
         esperando = false;
 
@@ -317,7 +313,6 @@ public class NPCClient : MonoBehaviour
         else
         {
             Destroy(GetComponent<BoxCollider>());
-
             ScoreController.instance.UpdateScore(puntosIncorrecto);
         }
 
@@ -326,22 +321,32 @@ public class NPCClient : MonoBehaviour
 
     bool EsPedidoCorrecto(BurgerController burger)
     {
+        var orderIngredients = currentOrder.requiredIngredients;
+
         if (burger.pattyCookState != currentOrder.requiredCookState)
             return false;
 
-        foreach (IngredientType ing in currentOrder.requiredIngredients)
+        // check burger ingredients
+        foreach (IngredientType ingredient in burger.ingredients)
         {
-            if (!burger.ingredients.Contains(ing))
-                return false;
+            if (ingredient == IngredientType.BaseBread) continue;
+
+            // if we're out of ingredients in the order, return false
+            // (excess ingredients in burger)
+            if (orderIngredients.Count == 0) return false;
+
+            // if the ingredient was found in the order, remove it from the list
+            if (orderIngredients.Contains(ingredient))
+                orderIngredients.Remove(ingredient);
+
+            // if the ingredient is not in the order, return false
+            // (extraneous ingredient in burger)
+            else return false;
         }
 
-        foreach (IngredientType ing in burger.ingredients)
-        {
-            if (ing == IngredientType.BaseBread) continue;
-
-            if (!currentOrder.requiredIngredients.Contains(ing))
-                return false;
-        }
+        // if after going through all the ingredients in the burger there's still
+        // some left in the order, return false (missing ingredients in burger)
+        if (orderIngredients.Count > 0) return false;
 
         return true;
     }
