@@ -87,4 +87,21 @@ public class OrderUIManager : MonoBehaviour
 
         return false;
     }
+    public int ObtenerSlotDisponible()
+    {
+        for (int i = 0; i < ocupado.Length; i++)
+        {
+            if (!ocupado[i])
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    public void ReservarSlotManual(int slot)
+    {
+        ocupado[slot] = true;
+    }
 }

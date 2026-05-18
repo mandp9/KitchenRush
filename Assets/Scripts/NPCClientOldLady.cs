@@ -149,7 +149,7 @@ public class NPCClientOldLady : MonoBehaviour
             }
         }
 
-        // Barra paciencia
+        // UI paciencia
         if (barraPaciencia != null)
         {
             float ratio = pacienciaActual / pacienciaMax;
@@ -356,7 +356,9 @@ public class NPCClientOldLady : MonoBehaviour
             miSlotUI = -1;
         }
 
-        StartCoroutine(ActualizarColaDelayed());
+        yield return new WaitForEndOfFrame();
+
+        QueueManager.instance.ActualizarCola();
 
         GameObject humo = Instantiate(
             efectoHumo,
@@ -381,18 +383,6 @@ public class NPCClientOldLady : MonoBehaviour
         }
 
         Destroy(gameObject);
-    }
-
-    IEnumerator ActualizarColaDelayed()
-    {
-        yield return null;
-
-        QueueManager.instance.ActualizarCola();
-
-        if (QueueManager.instance.cola.Count > 0)
-        {
-            QueueManager.instance.cola[0].IntentarIrABarra();
-        }
     }
 
     void EvaluarPaciencia()

@@ -15,20 +15,25 @@ public class QueueManager : MonoBehaviour
     public void ActualizarCola()
     {
         ActualizarPosiciones();
+
+        if (cola.Count > 0)
+        {
+            cola[0].IntentarIrABarra();
+        }
     }
 
     public void EntrarCola(NPCClient npc)
     {
         cola.Add(npc);
 
-        ActualizarPosiciones();
+        ActualizarCola();
     }
 
     public void SalirCola(NPCClient npc)
     {
         cola.Remove(npc);
 
-        ActualizarPosiciones();
+        ActualizarCola();
     }
 
     void ActualizarPosiciones()
@@ -37,11 +42,6 @@ public class QueueManager : MonoBehaviour
         {
             cola[i].posicionCola = i;
             cola[i].ActualizarPosicionCola();
-        }
-
-        if (cola.Count > 0)
-        {
-            cola[0].IntentarIrABarra();
         }
     }
 }

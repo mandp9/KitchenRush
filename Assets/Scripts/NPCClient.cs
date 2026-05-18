@@ -374,6 +374,12 @@ public class NPCClient : MonoBehaviour
         Destroy(gameObject);
     }
 
+    IEnumerator ActualizarColaDelayed()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        QueueManager.instance.ActualizarCola();
+    }
     void EvaluarPaciencia()
     {
         if (!esperando) return;
@@ -424,6 +430,9 @@ public class NPCClient : MonoBehaviour
     }
     public void IntentarIrABarra()
     {
+        if (slotReservado || yendoABarra)
+            return;
+
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
 
         int slot = ui.ReservarSlot();
