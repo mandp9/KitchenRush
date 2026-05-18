@@ -23,6 +23,10 @@ public class ScoreController : MonoBehaviour
     public TMP_Text scoreText;
     public TMP_Text gainText;
 
+    [Header("Sounds")]
+    public AudioSource musicSource;
+    public AudioClip[] musicClips;
+
     private Color32 white = new Color32(255, 255, 255, 255);
     private Color32 green = new Color32(63, 255, 63, 255);
     private Color32 red = new Color32(255, 63, 63, 255);
@@ -33,6 +37,7 @@ public class ScoreController : MonoBehaviour
     private void Start()
     {
         gainText.text = "";
+        StartCoroutine(MusicPlayer());
     }
 
     private void Update()
@@ -73,4 +78,22 @@ public class ScoreController : MonoBehaviour
         gainText.faceColor = white;
     }
 
+    private IEnumerator MusicPlayer()
+    {
+        yield return null;
+
+        musicSource.clip = musicClips[0];
+        musicSource.Play();
+
+        if (musicClips.Length > 1)
+        {
+            while (musicSource.isPlaying)
+                yield return null;
+
+            musicSource.clip = musicClips[1];
+            musicSource.Play();
+        }
+
+        musicSource.loop = true;
+    }
 }
