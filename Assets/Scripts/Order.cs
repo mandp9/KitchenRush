@@ -7,5 +7,7 @@ public class Order
     public List<IngredientType> requiredIngredients;
 
     public bool requiresFries;
-    public bool requiresDrink; // futuro
+    public bool requiresDrink; 
+    public DrinkType requiredDrink;
+
 }

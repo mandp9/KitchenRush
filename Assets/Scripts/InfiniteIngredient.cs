@@ -10,7 +10,6 @@ public class InfiniteIngredient : MonoBehaviour
 
     void OnAttachedToHand(Hand hand)
     {
-        // 🔥 evitar duplicaciones múltiples
         if (hasTriggered) return;
 
         hasTriggered = true;
@@ -19,7 +18,6 @@ public class InfiniteIngredient : MonoBehaviour
         {
             originSpawner.OnItemTaken();
 
-            // 🔥 IMPORTANTE: romper vínculo
             originSpawner = null;
         }
     }
