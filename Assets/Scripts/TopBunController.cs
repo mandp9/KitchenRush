@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class TopBunController : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class TopBunController : MonoBehaviour
     private bool inBurgerTrigger = false;
 
     private GameObject bottomBun;
+    private bool finalising = false;
 
     private void OnCollisionEnter(Collision other)
     {
@@ -15,7 +17,7 @@ public class TopBunController : MonoBehaviour
             sittingOnIngredient = true;
 
         if (sittingOnIngredient && inBurgerTrigger)            
-            Invoke("SendFinaliseBurger", 0.5f);
+            StartCoroutine(SendFinaliseBurger());
     }
 
     private void OnTriggerEnter(Collider other)
@@ -34,8 +36,13 @@ public class TopBunController : MonoBehaviour
         bottomBun = null;
     }
 
-    private void SendFinaliseBurger()
+    private IEnumerator SendFinaliseBurger()
     {
-        bottomBun.GetComponent<BurgerController>().FinaliseBurger();
+        yield return new WaitForSeconds(0.5f);
+        if (!finalising)
+        {
+            finalising = true;
+            bottomBun.GetComponent<BurgerController>().FinaliseBurger();
+        }
     }
 }

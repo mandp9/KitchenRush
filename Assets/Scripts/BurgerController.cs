@@ -6,6 +6,7 @@ public class BurgerController : MonoBehaviour
 {
     public List<IngredientType> ingredients = new();
     public CookState pattyCookState;
+    public AudioSource finaliseSound;
 
     private List<GameObject> ingredientObjects = new();
     private List<CookState> cookStates = new();
@@ -29,9 +30,10 @@ public class BurgerController : MonoBehaviour
         }
     }
 
-   public void FinaliseBurger()
+    public void FinaliseBurger()
     {
         Debug.Log("finalising burger...");
+        finaliseSound.Play();
 
         // 🔥 FORZAR BASE BREAD
         if (!ingredients.Contains(IngredientType.BaseBread))
