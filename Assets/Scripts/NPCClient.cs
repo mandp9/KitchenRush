@@ -203,18 +203,15 @@ public class NPCClient : MonoBehaviour
         };
 
         for (int i = 2; i < ingredientCount; i++)
-        {
             newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
-        }
+
+        newOrder.requiredIngredients.Sort();
 
         newOrder.requiresFries = Random.value < 0.6f;
         newOrder.requiresDrink = Random.value < 0.7f;
 
         if (newOrder.requiresDrink)
-        {
-            newOrder.requiredDrink =
-                (DrinkType)Random.Range(0, 5);
-        }
+            newOrder.requiredDrink = (DrinkType)Random.Range(0, 5);
 
         return newOrder;
     }
