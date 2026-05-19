@@ -57,6 +57,9 @@ public class NPCClient : MonoBehaviour
 
     [Header("Efectos")]
     public GameObject efectoHumo;
+    public AudioSource sonidoSatisfecho;
+    public AudioSource sonidoOk;
+    public AudioSource sonidoIncorrecto;
 
     [Header("Movimiento")]
     public float delayAntesDeIr = 5f;
@@ -276,7 +279,6 @@ public class NPCClient : MonoBehaviour
         ComprobarPedidoCompleto();
     }
 
-    
     void ComprobarPedidoCompleto()
     {
         if (!esperando) return;
@@ -298,13 +300,20 @@ public class NPCClient : MonoBehaviour
             Destroy(GetComponent<BoxCollider>());
 
             if (estadoActual == EstadoPaciencia.Tranquilo)
+            {
+                sonidoSatisfecho.Play();
                 ScoreController.instance.UpdateScore(puntosSatisfecho);
+            }
             else
+            {
+                sonidoOk.Play();
                 ScoreController.instance.UpdateScore(puntosOk);
+            }
         }
         else
         {
             Destroy(GetComponent<BoxCollider>());
+            sonidoIncorrecto.Play();
             ScoreController.instance.UpdateScore(puntosIncorrecto);
         }
 

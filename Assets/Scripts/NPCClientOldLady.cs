@@ -43,6 +43,9 @@ public class NPCClientOldLady : MonoBehaviour
 
     [Header("Efectos")]
     public GameObject efectoHumo;
+    public AudioSource sonidoSatisfecho;
+    public AudioSource sonidoOk;
+    public AudioSource sonidoIncorrecto;
 
     [Header("Delay antes de empezar a caminar")]
     public float delayAntesDeIr = 5f;
@@ -312,13 +315,20 @@ public class NPCClientOldLady : MonoBehaviour
             Destroy(GetComponent<BoxCollider>());
 
             if (estadoActual == EstadoPaciencia.Tranquilo)
+            {
+                sonidoSatisfecho.Play();
                 ScoreController.instance.UpdateScore(puntosSatisfecho);
+            }
             else
+            {
+                sonidoOk.Play();
                 ScoreController.instance.UpdateScore(puntosOk);
+            }
         }
         else
         {
             Destroy(GetComponent<BoxCollider>());
+            sonidoIncorrecto.Play();
             ScoreController.instance.UpdateScore(puntosIncorrecto);
         }
 
