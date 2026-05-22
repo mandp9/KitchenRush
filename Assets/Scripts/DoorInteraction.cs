@@ -7,7 +7,7 @@ public class DoorInteraction : MonoBehaviour
     private bool abierta = false;
     private float objetivo = 0f;
 
-    public float velocidad = 2f; 
+    public float velocidad = 3f; 
 
     [Header("Audio")]
     public AudioSource audioSource;
@@ -15,6 +15,9 @@ public class DoorInteraction : MonoBehaviour
     public AudioClip closeSound;
 
     private bool sonidoCierrePendiente = false;
+
+    private float cooldownTiempo = 1.2f; 
+    private float siguienteClickPermitido = 0f;
 
     void Start()
     {
@@ -29,7 +32,6 @@ public class DoorInteraction : MonoBehaviour
             Time.deltaTime * velocidad
         );
 
-        // Ha terminado de cerrar
         if (sonidoCierrePendiente && Mathf.Abs(rotatable.rotation) < 0.02f)
         {
             sonidoCierrePendiente = false;
@@ -49,12 +51,16 @@ public class DoorInteraction : MonoBehaviour
 
     public void ToggleDoor()
     {
+        if (Time.time < siguienteClickPermitido) return;
+
+        siguienteClickPermitido = Time.time + cooldownTiempo;
+
         abierta = !abierta;
         objetivo = abierta ? 1f : 0f;
 
         if (abierta)
         {
-            sonidoCierrePendiente = false; 
+            sonidoCierrePendiente = false;
             
             if (audioSource != null && openSound != null)
             {

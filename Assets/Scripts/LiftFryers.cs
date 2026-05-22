@@ -11,6 +11,9 @@ public class LiftFryers : MonoBehaviour
     bool isDown = false;
     Rigidbody rb;
 
+    private float cooldownTiempo = 1.2f; 
+    private float siguienteClickPermitido = 0f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -32,6 +35,10 @@ public class LiftFryers : MonoBehaviour
 
     public void ToggleLift()
     {
+        if (Time.time < siguienteClickPermitido) return;
+
+        siguienteClickPermitido = Time.time + cooldownTiempo;
+
         isDown = !isDown;
 
         if (rb != null)
@@ -43,7 +50,6 @@ public class LiftFryers : MonoBehaviour
 
     void Update()
     {
-
         Vector3 target = isDown ? targetPos : startPos;
 
         Vector3 nextPos = Vector3.MoveTowards(
