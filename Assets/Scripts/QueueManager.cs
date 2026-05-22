@@ -16,9 +16,9 @@ public class QueueManager : MonoBehaviour
     {
         ActualizarPosiciones();
 
-        if (cola.Count > 0)
+        for(int i=0;i<cola.Count;i++)
         {
-            cola[0].IntentarIrABarra();
+            cola[i].IntentarIrABarra();
         }
     }
 
@@ -38,9 +38,10 @@ public class QueueManager : MonoBehaviour
 
     void ActualizarPosiciones()
     {
-        for (int i = 0; i < cola.Count; i++)
+        for(int i=0;i<cola.Count;i++)
         {
-            cola[i].posicionCola = i;
+            cola[i].posicionCola=i;
+
             cola[i].ActualizarPosicionCola();
         }
     }
