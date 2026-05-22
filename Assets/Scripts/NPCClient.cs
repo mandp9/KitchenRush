@@ -57,6 +57,9 @@ public class NPCClient : MonoBehaviour
 
     [Header("Efectos")]
     public GameObject efectoHumo;
+    public AudioSource sonidoSatisfecho;
+    public AudioSource sonidoOk;
+    public AudioSource sonidoIncorrecto;
 
     [Header("Movimiento")]
     public float delayAntesDeIr = 5f;
@@ -132,30 +135,22 @@ public class NPCClient : MonoBehaviour
             return;
 
         // SOLO cuando va hacia barra
-        if (yendoABarra)
+        if (yendoABarra &&
+            !agent.pathPending &&
+            agent.remainingDistance <= agent.stoppingDistance &&
+            agent.velocity.magnitude < 0.1f)
         {
-            if(
-                !agent.pathPending &&
-                agent.remainingDistance <= 0.25f
-            )
-            {
-                Debug.Log(name+" LLEGO");
+            yendoABarra = false;
 
-                yendoABarra=false;
+            haLlegado = true;
 
-                haLlegado=true;
+            agent.isStopped = true;
 
-                agent.ResetPath();
+            anim.SetBool("isWalking", false);
 
-                agent.isStopped=true;
-
-                anim.SetBool("isWalking",false);
-
-                bandejas[miSlotUI].npcActual=this;
-
-                Pedir();
-            }
+            Pedir();
         }
+
         // paciencia
         if (esperando)
         {
@@ -211,18 +206,15 @@ public class NPCClient : MonoBehaviour
         };
 
         for (int i = 2; i < ingredientCount; i++)
-        {
             newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
-        }
+
+        newOrder.requiredIngredients.Sort();
 
         newOrder.requiresFries = Random.value < 0.6f;
         newOrder.requiresDrink = Random.value < 0.7f;
 
         if (newOrder.requiresDrink)
-        {
-            newOrder.requiredDrink =
-                (DrinkType)Random.Range(0, 5);
-        }
+            newOrder.requiredDrink = (DrinkType)Random.Range(0, 5);
 
         return newOrder;
     }
@@ -262,11 +254,9 @@ public class NPCClient : MonoBehaviour
 
         if (currentOrder.requiresFries)
             texto += "Fries\n";
+
         if (currentOrder.requiresDrink)
-        {
-            texto += "Drink: " +
-                    currentOrder.requiredDrink + "\n";
-        }
+            texto += "Drink: " + currentOrder.requiredDrink + "\n";
 
         ui.EscribirPedido(miSlotUI, texto);
     }
@@ -289,43 +279,41 @@ public class NPCClient : MonoBehaviour
         ComprobarPedidoCompleto();
     }
 
-    
     void ComprobarPedidoCompleto()
     {
+        if (!esperando) return;
+
         if (burgerRecibida == null) return;
-
         if (currentOrder.requiresFries && friesRecibidas == null) return;
-
-        if (currentOrder.requiresDrink &&
-            bebidaRecibida == null)
-        {
-            return;
-        }
+        if (currentOrder.requiresDrink && bebidaRecibida == null) return;
 
         esperando = false;
 
         bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
        
         if (currentOrder.requiresDrink)
-        {
             if (bebidaRecibida.type != currentOrder.requiredDrink)
-            {
                 pedidoCorrecto = false;
-            }
-        }
+        
         if (pedidoCorrecto)
         {
             Destroy(GetComponent<BoxCollider>());
 
             if (estadoActual == EstadoPaciencia.Tranquilo)
+            {
+                sonidoSatisfecho.Play();
                 ScoreController.instance.UpdateScore(puntosSatisfecho);
+            }
             else
+            {
+                sonidoOk.Play();
                 ScoreController.instance.UpdateScore(puntosOk);
+            }
         }
         else
         {
             Destroy(GetComponent<BoxCollider>());
-
+            sonidoIncorrecto.Play();
             ScoreController.instance.UpdateScore(puntosIncorrecto);
         }
 
@@ -334,22 +322,32 @@ public class NPCClient : MonoBehaviour
 
     bool EsPedidoCorrecto(BurgerController burger)
     {
+        var orderIngredients = currentOrder.requiredIngredients;
+
         if (burger.pattyCookState != currentOrder.requiredCookState)
             return false;
 
-        foreach (IngredientType ing in currentOrder.requiredIngredients)
+        // check burger ingredients
+        foreach (IngredientType ingredient in burger.ingredients)
         {
-            if (!burger.ingredients.Contains(ing))
-                return false;
+            if (ingredient == IngredientType.BaseBread) continue;
+
+            // if we're out of ingredients in the order, return false
+            // (excess ingredients in burger)
+            if (orderIngredients.Count == 0) return false;
+
+            // if the ingredient was found in the order, remove it from the list
+            if (orderIngredients.Contains(ingredient))
+                orderIngredients.Remove(ingredient);
+
+            // if the ingredient is not in the order, return false
+            // (extraneous ingredient in burger)
+            else return false;
         }
 
-        foreach (IngredientType ing in burger.ingredients)
-        {
-            if (ing == IngredientType.BaseBread) continue;
-
-            if (!currentOrder.requiredIngredients.Contains(ing))
-                return false;
-        }
+        // if after going through all the ingredients in the burger there's still
+        // some left in the order, return false (missing ingredients in burger)
+        if (orderIngredients.Count > 0) return false;
 
         return true;
     }
@@ -398,9 +396,6 @@ public class NPCClient : MonoBehaviour
         {
             barraPaciencia.transform.parent.gameObject.SetActive(false);
         }
-        QueueManager.instance.SalirCola(this);
-
-        gameObject.SetActive(false);
 
         Destroy(gameObject);
     }
@@ -463,7 +458,7 @@ public class NPCClient : MonoBehaviour
     {
         if (slotReservado || yendoABarra)
             return;
-        
+
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
 
         int slot = ui.ReservarSlot();
@@ -472,21 +467,15 @@ public class NPCClient : MonoBehaviour
 
         miSlotUI = slot;
 
-        Debug.Log(
-        name +
-        " miSlotUI=" +
-        miSlotUI
-    );
+        bandejas[slot].LimpiarBandeja();
 
-    bandejas[miSlotUI].npcActual=this;
+        bandejas[slot].npcActual = this;
 
-    Debug.Log(
-        "Asignando bandeja "+
-        miSlotUI
-    );
         slotReservado = true;
 
         yendoABarra = true;
+
+        QueueManager.instance.SalirCola(this);
 
         destino = puntosBarra[slot];
 
