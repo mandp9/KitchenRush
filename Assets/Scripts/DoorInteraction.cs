@@ -32,7 +32,7 @@ public class DoorInteraction : MonoBehaviour
             Time.deltaTime * velocidad
         );
 
-        if (sonidoCierrePendiente && Mathf.Abs(rotatable.rotation) < 0.02f)
+        if (sonidoCierrePendiente && Mathf.Abs(rotatable.rotation) < 0.15f)
         {
             sonidoCierrePendiente = false;
 

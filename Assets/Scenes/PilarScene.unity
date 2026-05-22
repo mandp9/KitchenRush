@@ -7545,7 +7545,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 945add492658b884b84d8566d3c54182, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocidad: 0.8
+  velocidad: 0.7
   audioSource: {fileID: 1721461995}
   openSound: {fileID: 8300000, guid: b7b85201786ef1648bbd5ecbff20573c, type: 3}
   closeSound: {fileID: 8300000, guid: 6659b5fef5e895a4a94f24a41a78bfba, type: 3}
