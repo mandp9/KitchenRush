@@ -63,7 +63,7 @@ public class PizzaController : MonoBehaviour
 
         Quaternion targetRotation = pizzaCenter.rotation * Quaternion.Euler(ingredient.customRotationOffset);
 
-        if (ingredient.type == IngredientType.Mozarella || ingredient.type == IngredientType.Cheese)
+        if (ingredient.type == IngredientType.Mozarella)
         {
             // El queso va directo al centro, escalado y con su rotación corregida
             ingObject.transform.position = pizzaCenter.position;
