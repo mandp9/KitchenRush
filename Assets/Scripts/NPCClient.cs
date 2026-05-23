@@ -54,6 +54,9 @@ public class NPCClient : MonoBehaviour
     private BurgerController burgerRecibida = null;
     private GameObject friesRecibidas = null;
     private Drink bebidaRecibida = null;
+    
+    // --- NUEVO: Elemento recibido para Nivel 3 ---
+    private GameObject kebabRecibido = null; 
 
     [Header("Efectos")]
     public GameObject efectoHumo;
@@ -72,7 +75,9 @@ public class NPCClient : MonoBehaviour
     public float velocidadParpadeo = 5f;
 
     private float tiempoParpadeo = 0f;
-    
+
+    [Header("Level Configuration")]
+    public bool isLevel3 = false; 
 
     enum EstadoPaciencia
     {
@@ -115,9 +120,7 @@ public class NPCClient : MonoBehaviour
         if (posicionCola >= 0 && posicionCola < puntosCola.Length)
         {
             agent.isStopped = false;
-
             anim.SetBool("isWalking", true);
-
             agent.SetDestination(puntosCola[posicionCola].position);
         }
     }
@@ -141,13 +144,9 @@ public class NPCClient : MonoBehaviour
             agent.velocity.magnitude < 0.1f)
         {
             yendoABarra = false;
-
             haLlegado = true;
-
             agent.isStopped = true;
-
             anim.SetBool("isWalking", false);
-
             Pedir();
         }
 
@@ -159,9 +158,7 @@ public class NPCClient : MonoBehaviour
             if (timerInicio >= delayAntesDeEsperar)
             {
                 pacienciaActual -= Time.deltaTime;
-
                 pacienciaActual = Mathf.Max(pacienciaActual, 0f);
-
                 EvaluarPaciencia();
             }
         }
@@ -170,7 +167,6 @@ public class NPCClient : MonoBehaviour
         if (barraPaciencia != null)
         {
             float ratio = pacienciaActual / pacienciaMax;
-
             barraPaciencia.fillAmount = ratio;
 
             Color colorBase = Color.Lerp(Color.red, Color.green, ratio);
@@ -178,9 +174,7 @@ public class NPCClient : MonoBehaviour
             if (ratio <= umbralParpadeo)
             {
                 tiempoParpadeo += Time.deltaTime * velocidadParpadeo;
-
                 float t = (Mathf.Sin(tiempoParpadeo) + 1f) * 0.5f;
-
                 barraPaciencia.color = Color.Lerp(colorBase, Color.white, t);
             }
             else
@@ -195,20 +189,39 @@ public class NPCClient : MonoBehaviour
     {
         Order newOrder = new();
 
-        int ingredientCount = Random.Range(2, 6);
-
-        newOrder.requiredCookState = (CookState)Random.Range(1, 3);
-
-        newOrder.requiredIngredients = new List<IngredientType>()
+        if (isLevel3)
         {
-            IngredientType.TopBread,
-            IngredientType.Meat
-        };
+            newOrder.requiredKebab = true; 
 
-        for (int i = 2; i < ingredientCount; i++)
-            newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
+            int ingredientCount = Random.Range(2, 6);
+            newOrder.requiredCookState = (CookState)Random.Range(1, 3);
+            newOrder.requiredIngredients = new List<IngredientType>()
+            {
+                IngredientType.TopBread,
+                IngredientType.Meat
+            };
 
-        newOrder.requiredIngredients.Sort();
+            for (int i = 2; i < ingredientCount; i++)
+                newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
+
+            newOrder.requiredIngredients.Sort();
+        }
+        else
+        {
+            newOrder.requiredKebab = false;
+            int ingredientCount = Random.Range(2, 6);
+            newOrder.requiredCookState = (CookState)Random.Range(1, 3);
+            newOrder.requiredIngredients = new List<IngredientType>()
+            {
+                IngredientType.TopBread,
+                IngredientType.Meat
+            };
+
+            for (int i = 2; i < ingredientCount; i++)
+                newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
+
+            newOrder.requiredIngredients.Sort();
+        }
 
         newOrder.requiresFries = Random.value < 0.6f;
         newOrder.requiresDrink = Random.value < 0.7f;
@@ -222,7 +235,6 @@ public class NPCClient : MonoBehaviour
     void Pedir()
     {
         anim.SetBool("isOrdering", true);
-
         Invoke(nameof(PararHablar), 2.5f);
 
         if (barraPaciencia != null)
@@ -231,24 +243,23 @@ public class NPCClient : MonoBehaviour
         }
 
         timerInicio = 0f;
-
         pacienciaActual = pacienciaMax;
-
         currentOrder = GenerateOrder();
-
         esperando = true;
 
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
+        string texto = "Order\n";
 
-        string texto =
-        "Order\n" +
-        "Patty: " + currentOrder.requiredCookState + "\n" +
-        "Ingredients:\n";
+        if (currentOrder.requiredKebab)
+        {
+            texto += "Kebab wrap\n";
+        }
+
+        texto += "Patty: " + currentOrder.requiredCookState + "\n" + "Ingredients:\n";
 
         foreach (var ing in currentOrder.requiredIngredients)
         {
             if (ing == IngredientType.TopBread) continue;
-
             texto += "- " + ing + "\n";
         }
 
@@ -264,18 +275,28 @@ public class NPCClient : MonoBehaviour
     public void RecibirBurger(BurgerController burger)
     {
         burgerRecibida = burger;
-
         Debug.Log("Burger recibida");
-
         ComprobarPedidoCompleto();
     }
 
     public void RecibirFries(GameObject fries)
     {
         friesRecibidas = fries;
-
         Debug.Log("Fries recibidas");
+        ComprobarPedidoCompleto();
+    }
 
+    public void RecibirDrink(Drink drink)
+    {
+        bebidaRecibida = drink;
+        Debug.Log("Drink recibida");
+        ComprobarPedidoCompleto();
+    }
+
+    public void RecibirKebab(GameObject kebab)
+    {
+        kebabRecibido = kebab;
+        Debug.Log("Kebab recibido");
         ComprobarPedidoCompleto();
     }
 
@@ -283,17 +304,29 @@ public class NPCClient : MonoBehaviour
     {
         if (!esperando) return;
 
-        if (burgerRecibida == null) return;
+        if (isLevel3)
+        {
+            if (kebabRecibido == null || burgerRecibida == null) return;
+        }
+        else
+        {
+            if (burgerRecibida == null) return;
+        }
+
         if (currentOrder.requiresFries && friesRecibidas == null) return;
         if (currentOrder.requiresDrink && bebidaRecibida == null) return;
 
         esperando = false;
 
+        // Validamos la estructura de la hamburguesa
         bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
        
-        if (currentOrder.requiresDrink)
+        if (currentOrder.requiresDrink && bebidaRecibida != null)
             if (bebidaRecibida.type != currentOrder.requiredDrink)
                 pedidoCorrecto = false;
+        
+        if (isLevel3 && kebabRecibido == null)
+            pedidoCorrecto = false;
         
         if (pedidoCorrecto)
         {
@@ -301,19 +334,20 @@ public class NPCClient : MonoBehaviour
 
             if (estadoActual == EstadoPaciencia.Tranquilo)
             {
-                sonidoSatisfecho.Play();
+                // Tus AudioSources originales vuelven a sonar aquí
+                if (sonidoSatisfecho != null) sonidoSatisfecho.Play();
                 ScoreController.instance.UpdateScore(puntosSatisfecho);
             }
             else
             {
-                sonidoOk.Play();
+                if (sonidoOk != null) sonidoOk.Play();
                 ScoreController.instance.UpdateScore(puntosOk);
             }
         }
         else
         {
             Destroy(GetComponent<BoxCollider>());
-            sonidoIncorrecto.Play();
+            if (sonidoIncorrecto != null) sonidoIncorrecto.Play();
             ScoreController.instance.UpdateScore(puntosIncorrecto);
         }
 
@@ -322,31 +356,22 @@ public class NPCClient : MonoBehaviour
 
     bool EsPedidoCorrecto(BurgerController burger)
     {
-        var orderIngredients = currentOrder.requiredIngredients;
+        var orderIngredients = new List<IngredientType>(currentOrder.requiredIngredients);
 
         if (burger.pattyCookState != currentOrder.requiredCookState)
             return false;
 
-        // check burger ingredients
         foreach (IngredientType ingredient in burger.ingredients)
         {
             if (ingredient == IngredientType.BaseBread) continue;
-
-            // if we're out of ingredients in the order, return false
-            // (excess ingredients in burger)
             if (orderIngredients.Count == 0) return false;
 
-            // if the ingredient was found in the order, remove it from the list
             if (orderIngredients.Contains(ingredient))
                 orderIngredients.Remove(ingredient);
-
-            // if the ingredient is not in the order, return false
-            // (extraneous ingredient in burger)
-            else return false;
+            else 
+                return false;
         }
 
-        // if after going through all the ingredients in the burger there's still
-        // some left in the order, return false (missing ingredients in burger)
         if (orderIngredients.Count > 0) return false;
 
         return true;
@@ -355,9 +380,8 @@ public class NPCClient : MonoBehaviour
     IEnumerator Irse(bool takeOrder)
     {
         esperando = false;
-
         anim.SetBool("isOrdering", false);
-
+        
         yield return new WaitForSeconds(1f);
 
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
@@ -365,13 +389,12 @@ public class NPCClient : MonoBehaviour
         if (miSlotUI != -1)
         {
             ui.LiberarPedido(miSlotUI);
-
             bandejas[miSlotUI].LimpiarBandeja();
-
             bandejas[miSlotUI].npcActual = null;
         }
         slotReservado = false;
         QueueManager.instance.ActualizarCola();
+        
         GameObject humo = Instantiate(
             efectoHumo,
             anim.transform.position,
@@ -382,6 +405,17 @@ public class NPCClient : MonoBehaviour
 
         if (takeOrder)
         {
+            if (kebabRecibido != null)
+            {
+                Valve.VR.InteractionSystem.Hand hand = kebabRecibido.GetComponentInParent<Valve.VR.InteractionSystem.Hand>();
+                if (hand != null)
+                {
+                    hand.DetachObject(kebabRecibido);
+                    hand.HoverLock(null);
+                }
+                kebabRecibido.SetActive(false); 
+            }
+
             if (burgerRecibida != null)
                 Destroy(burgerRecibida.gameObject);
 
@@ -390,6 +424,11 @@ public class NPCClient : MonoBehaviour
             
             if (bebidaRecibida != null)
                 Destroy(bebidaRecibida.gameObject);
+
+            yield return new WaitForFixedUpdate();
+
+            if (kebabRecibido != null)
+                Destroy(kebabRecibido);
         }
 
         if (barraPaciencia != null)
@@ -403,9 +442,9 @@ public class NPCClient : MonoBehaviour
     IEnumerator ActualizarColaDelayed()
     {
         yield return new WaitForSeconds(0.1f);
-
         QueueManager.instance.ActualizarCola();
     }
+
     void EvaluarPaciencia()
     {
         if (!esperando) return;
@@ -447,50 +486,33 @@ public class NPCClient : MonoBehaviour
                 Debug.Log("Im fed up of waiting");
 
                 esperando = false;
-
                 ScoreController.instance.UpdateScore(puntosTimeout);
-
                 StartCoroutine(Irse(false));
                 break;
         }
     }
+
     public void IntentarIrABarra()
     {
         if (slotReservado || yendoABarra)
             return;
 
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
-
         int slot = ui.ReservarSlot();
 
         if (slot == -1) return;
 
         miSlotUI = slot;
-
         bandejas[slot].LimpiarBandeja();
-
         bandejas[slot].npcActual = this;
-
         slotReservado = true;
-
         yendoABarra = true;
 
         QueueManager.instance.SalirCola(this);
 
         destino = puntosBarra[slot];
-
         agent.isStopped = false;
-
         agent.SetDestination(destino.position);
-
         anim.SetBool("isWalking", true);
-    }
-    public void RecibirDrink(Drink drink)
-    {
-        bebidaRecibida = drink;
-
-        Debug.Log("Drink recibida");
-
-        ComprobarPedidoCompleto();
     }
 }

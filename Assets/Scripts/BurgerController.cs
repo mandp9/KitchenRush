@@ -35,7 +35,6 @@ public class BurgerController : MonoBehaviour
         Debug.Log("finalising burger...");
         finaliseSound.Play();
 
-        // 🔥 FORZAR BASE BREAD
         if (!ingredients.Contains(IngredientType.BaseBread))
         {
             ingredients.Add(IngredientType.BaseBread);
@@ -44,7 +43,6 @@ public class BurgerController : MonoBehaviour
 
         foreach (GameObject ingredient in ingredientObjects)
         {
-            // fix all ingredients in place
             Destroy(ingredient.GetComponent<Throwable>());
             Destroy(ingredient.GetComponent<Rigidbody>());
             Destroy(ingredient.GetComponent<Interactable>());
@@ -56,12 +54,9 @@ public class BurgerController : MonoBehaviour
                 cookStates.Add(ingredient.GetComponent<temporaryCookableController>().GetCookState());
         }
 
-        // if all the patties are cooked to the same state, set the burger cook state to it
-        // i.e. if all cook states are equal to the first cook state
         if (cookStates.FindAll(cookState => cookState == cookStates[0]).Count == cookStates.Count)
             pattyCookState = cookStates[0];
 
-        // remove base bread's trigger collider
         Destroy(this.GetComponent<BoxCollider>());
     }
 }
