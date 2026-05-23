@@ -45,6 +45,11 @@ public class PizzaController : MonoBehaviour
     {
         Ingredient ingredient = other.GetComponentInParent<Ingredient>() ?? other.GetComponentInChildren<Ingredient>();
 
+        if (other.GetComponentInParent<PizzaController>() != null || other.GetComponentInChildren<PizzaController>() != null)
+        {
+            return; // Salir de inmediato, no hacer nada
+        }
+
         if (ingredient != null && !ingredient.isPlaced)
         {
             SnapIngredient(ingredient);
@@ -70,7 +75,7 @@ public class PizzaController : MonoBehaviour
             ingObject.transform.rotation = targetRotation;
             ingObject.transform.localScale = cheeseTargetScale;
         }
-        else
+        else if(ingredient.type != IngredientType.Mozarella || ingredient.type != IngredientType.PizzaCrust)
         {
             // Distribución matemática para ingredientes pequeños
             Vector3 targetLocalPosition = CalculateAutomaticToppingPosition(smallToppingsCount);
