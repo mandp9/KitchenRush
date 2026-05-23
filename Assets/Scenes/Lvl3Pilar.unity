@@ -200,8 +200,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
+      propertyPath: pacienciaMax
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
-      value: 25
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: bandejas.Array.size
@@ -4039,7 +4043,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
-      value: 12
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: bandejas.Array.size
@@ -4203,7 +4207,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5137487099690713490, guid: e6ece62bcea3e7a4e940d1429ec79bd1, type: 3}
       propertyPath: delayAntesDeIr
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 5137487099690713490, guid: e6ece62bcea3e7a4e940d1429ec79bd1, type: 3}
       propertyPath: bandejas.Array.size
@@ -8628,11 +8632,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: pacienciaMax
-      value: 60
+      value: 85
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
-      value: 45
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: bandejas.Array.size
@@ -9627,7 +9631,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: pacienciaMax
-      value: 60
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
@@ -10017,7 +10021,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
-      value: 70
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: bandejas.Array.size
@@ -11030,7 +11034,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
-      value: 30
+      value: 55
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: bandejas.Array.size

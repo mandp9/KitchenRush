@@ -184,8 +184,20 @@ public class NPCClient : MonoBehaviour
 
         if (isLevel3)
         {
-            newOrder.requiredKebab = true;
-            newOrder.requiredIngredients = new List<IngredientType>(); 
+            newOrder.requiredKebab = true; 
+
+            int ingredientCount = Random.Range(2, 6);
+            newOrder.requiredCookState = (CookState)Random.Range(1, 3);
+            newOrder.requiredIngredients = new List<IngredientType>()
+            {
+                IngredientType.TopBread,
+                IngredientType.Meat
+            };
+
+            for (int i = 2; i < ingredientCount; i++)
+                newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
+
+            newOrder.requiredIngredients.Sort();
         }
         else
         {
@@ -204,7 +216,6 @@ public class NPCClient : MonoBehaviour
             newOrder.requiredIngredients.Sort();
         }
 
-       
         newOrder.requiresFries = Random.value < 0.6f;
         newOrder.requiresDrink = Random.value < 0.7f; 
 
@@ -232,18 +243,16 @@ public class NPCClient : MonoBehaviour
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
         string texto = "Order\n";
 
-        if (currentOrder.requiredKebab)
+        if (isLevel3)
         {
-            texto += "** KEBAB WRAP **\n";
+            texto += "Kebab wrap \n";
         }
-        else
+
+        texto += "Patty: " + currentOrder.requiredCookState + "\n" + "Ingredients:\n";
+        foreach (var ing in currentOrder.requiredIngredients)
         {
-            texto += "Patty: " + currentOrder.requiredCookState + "\n" + "Ingredients:\n";
-            foreach (var ing in currentOrder.requiredIngredients)
-            {
-                if (ing == IngredientType.TopBread) continue;
-                texto += "- " + ing + "\n";
-            }
+            if (ing == IngredientType.TopBread) continue;
+            texto += "- " + ing + "\n";
         }
 
         if (currentOrder.requiresFries)
@@ -287,8 +296,14 @@ public class NPCClient : MonoBehaviour
     {
         if (!esperando) return;
 
-        if (currentOrder.requiredKebab && kebabRecibido == null) return;
-        if (!currentOrder.requiredKebab && burgerRecibida == null) return;
+        if (isLevel3)
+        {
+            if (kebabRecibido == null || burgerRecibida == null) return;
+        }
+        else
+        {
+            if (burgerRecibida == null) return;
+        }
 
         if (currentOrder.requiresFries && friesRecibidas == null) return;
         if (currentOrder.requiresDrink && bebidaRecibida == null) return;
@@ -296,16 +311,13 @@ public class NPCClient : MonoBehaviour
         esperando = false;
         bool pedidoCorrecto = true;
 
-        if (currentOrder.requiredKebab)
+        pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
+
+        if (isLevel3 && kebabRecibido == null)
         {
-            pedidoCorrecto = (kebabRecibido != null); 
-        }
-        else
-        {
-            pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
+            pedidoCorrecto = false;
         }
        
-        // Validar bebida
         if (currentOrder.requiresDrink && bebidaRecibida != null)
         {
             if (bebidaRecibida.type != currentOrder.requiredDrink)

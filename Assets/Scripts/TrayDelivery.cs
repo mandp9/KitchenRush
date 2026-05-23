@@ -9,8 +9,7 @@ public class TrayDelivery : MonoBehaviour
         if (npcActual == null)
             return;
 
-        BurgerController burger =
-            other.GetComponent<BurgerController>();
+        BurgerController burger = other.GetComponent<BurgerController>();
 
         if (burger != null)
         {
@@ -56,7 +55,17 @@ public class TrayDelivery : MonoBehaviour
 
             return;
         }
+
+        if (other.transform.root.name.Contains("Kebab_Wrap"))
+        {
+            if (npcActual is NPCClient npc)
+            {
+                npc.RecibirKebab(other.transform.root.gameObject);
+            }
+            return;
+        }
     }
+
     public void LimpiarBandeja()
     {
         BoxCollider box = GetComponent<BoxCollider>();
