@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 7
+  customRotationOffset: {x: 90, y: 0, z: 0}
   isPlaced: 0
 --- !u!65 &4136820111148358592
 BoxCollider:

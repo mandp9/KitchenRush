@@ -23,7 +23,9 @@ public enum IngredientType
 public class Ingredient : MonoBehaviour
 {
     public IngredientType type;
+    public Vector3 customRotationOffset = Vector3.zero;
 
     [HideInInspector]
     public bool isPlaced = false;
+
 }

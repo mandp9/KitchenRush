@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 8
+  customRotationOffset: {x: 90, y: 0, z: 0}
   isPlaced: 0
 --- !u!114 &4244953546472876406
 MonoBehaviour:
@@ -284,4 +285,4 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.0014000003, y: 0.00097076636, z: 0.00031006715}
-  m_Center: {x: -0.0000000037257526, y: -0.000043718297, z: 0.000003492744}
+  m_Center: {x: 0, y: 0, z: 0}

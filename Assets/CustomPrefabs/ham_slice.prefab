@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 9
+  customRotationOffset: {x: 90, y: 0, z: 0}
   isPlaced: 0
 --- !u!114 &6728438319709162476
 MonoBehaviour:
