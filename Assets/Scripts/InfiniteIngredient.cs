@@ -6,9 +6,7 @@ public class InfiniteIngredient : MonoBehaviour
     [HideInInspector]
     public InfiniteIngredientSpawner originSpawner;
 
-    [HideInInspector]
-    public InfiniteChipsSpawner chipsSpawner;
-
+ 
     private bool hasTriggered = false;
 
     void OnAttachedToHand(Hand hand)
@@ -24,12 +22,6 @@ public class InfiniteIngredient : MonoBehaviour
         {
             originSpawner.OnItemTaken();
             originSpawner = null;
-        }
-
-        if (chipsSpawner != null)
-        {
-            chipsSpawner.OnItemTaken();
-            chipsSpawner = null;
         }
     }
 }
