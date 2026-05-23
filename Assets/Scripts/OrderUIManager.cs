@@ -24,7 +24,6 @@ public class OrderUIManager : MonoBehaviour
         }
     }
 
-    // RESERVAR SLOT
     public int ReservarSlot()
     {
         for (int i = 0; i < ocupado.Length; i++)
@@ -42,7 +41,6 @@ public class OrderUIManager : MonoBehaviour
         return -1;
     }
 
-    // ESCRIBIR PEDIDO EN SLOT
     public void EscribirPedido(int slot, string texto)
     {
         if (slot < 0 || slot >= orderTexts.Length)
@@ -57,7 +55,6 @@ public class OrderUIManager : MonoBehaviour
         }
     }
 
-    // LIBERAR SLOT
     public void LiberarPedido(int index)
     {
         if (index < 0 || index >= orderTexts.Length)
@@ -76,7 +73,6 @@ public class OrderUIManager : MonoBehaviour
         }
     }
 
-    // OPCIONAL
     public bool HayHuecoLibre()
     {
         for (int i = 0; i < ocupado.Length; i++)

@@ -9,5 +9,6 @@ public class Order
     public bool requiresFries;
     public bool requiresDrink; 
     public DrinkType requiredDrink;
+    public bool requiredKebab;
 
 }
