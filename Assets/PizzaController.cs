@@ -2,6 +2,13 @@
 using Valve.VR.InteractionSystem;
 using System.Collections.Generic;
 
+public enum PizzaCookState
+{
+    Raw,
+    Cooked,
+    Burnt
+}
+
 public class PizzaController : MonoBehaviour
 {
     [Header("Configuración de la Masa")]
@@ -18,6 +25,11 @@ public class PizzaController : MonoBehaviour
     [Header("Estado Actual")]
     public List<IngredientType> currentIngredients = new();
     private List<GameObject> attachedObjects = new();
+
+    [Header("Estado de Cocción")]
+    public PizzaCookState cookState = PizzaCookState.Raw;
+
+
 
     // Contador de ingredientes pequeños para calcular el patrón de distribución
     private int smallToppingsCount = 0;
@@ -141,5 +153,12 @@ public class PizzaController : MonoBehaviour
 
         Debug.Log("¡Pizza completada con éxito según la receta!");
         return true;
+    }
+
+    public void SetCookState(PizzaCookState newState)
+    {
+        cookState = newState;
+        //UpdateVisuals();
+        Debug.Log("La pizza ahora está: " + cookState);
     }
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
@@ -10,6 +10,10 @@ public class InteractableOven : MonoBehaviour
     public Vector3 openRotation;
     public Vector3 closedRotation;
     public Transform ObjectToRotate;
+
+    [Header("Referencia al Horno")]
+    [Tooltip("Arrastra aquí el objeto padre que tiene el script OvenController")]
+    public OvenController ovenController;
 
     public SteamVR_Action_Boolean grabAction;
 
@@ -47,17 +51,26 @@ public class InteractableOven : MonoBehaviour
         if (isOpen)
         {
             ObjectToRotate.localEulerAngles = openRotation;
+
+            if (ovenController != null)
+            {
+                ovenController.SetDoorClosed(false);
+            }
         }
         else
         {
             ObjectToRotate.localEulerAngles = closedRotation;
+
+            if (ovenController != null)
+            {
+                ovenController.SetDoorClosed(true);
+            }
         }
     }
 
     private void HandHoverUpdate(Hand hand)
     {
-        if (grabAction != null &&
-            grabAction.GetStateDown(hand.handType))
+        if (grabAction != null && grabAction.GetStateDown(hand.handType))
         {
             ToggleDoor();
         }
@@ -67,5 +80,4 @@ public class InteractableOven : MonoBehaviour
     {
         ToggleDoor();
     }
-
 }
