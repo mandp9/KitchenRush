@@ -55,6 +55,7 @@ public class NPCClient : MonoBehaviour
     private GameObject friesRecibidas = null;
     private Drink bebidaRecibida = null;
     
+    // --- NUEVO: Elemento recibido para Nivel 3 ---
     private GameObject kebabRecibido = null; 
 
     [Header("Efectos")]
@@ -76,7 +77,7 @@ public class NPCClient : MonoBehaviour
     private float tiempoParpadeo = 0f;
 
     [Header("Level Configuration")]
-    public bool isLevel3 = false; // Márcalo como True en el Inspector de la Escena 3
+    public bool isLevel3 = false; 
 
     enum EstadoPaciencia
     {
@@ -98,6 +99,7 @@ public class NPCClient : MonoBehaviour
         }
 
         agent.isStopped = true;
+
         Invoke(nameof(EmpezarAMoverse), delayAntesDeIr);
     }
 
@@ -110,7 +112,8 @@ public class NPCClient : MonoBehaviour
 
     public void ActualizarPosicionCola()
     {
-        if (slotReservado) return;
+        if (slotReservado)
+            return;
 
         haLlegado = false;
 
@@ -131,8 +134,10 @@ public class NPCClient : MonoBehaviour
     {
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f);
 
-        if (!haEmpezadoAMoverse) return;
+        if (!haEmpezadoAMoverse)
+            return;
 
+        // SOLO cuando va hacia barra
         if (yendoABarra &&
             !agent.pathPending &&
             agent.remainingDistance <= agent.stoppingDistance &&
@@ -145,6 +150,7 @@ public class NPCClient : MonoBehaviour
             Pedir();
         }
 
+        // paciencia
         if (esperando)
         {
             timerInicio += Time.deltaTime;
@@ -157,6 +163,7 @@ public class NPCClient : MonoBehaviour
             }
         }
 
+        // barra paciencia
         if (barraPaciencia != null)
         {
             float ratio = pacienciaActual / pacienciaMax;
@@ -217,7 +224,7 @@ public class NPCClient : MonoBehaviour
         }
 
         newOrder.requiresFries = Random.value < 0.6f;
-        newOrder.requiresDrink = Random.value < 0.7f; 
+        newOrder.requiresDrink = Random.value < 0.7f;
 
         if (newOrder.requiresDrink)
             newOrder.requiredDrink = (DrinkType)Random.Range(0, 5);
@@ -243,12 +250,13 @@ public class NPCClient : MonoBehaviour
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
         string texto = "Order\n";
 
-        if (isLevel3)
+        if (currentOrder.requiredKebab)
         {
-            texto += "Kebab wrap \n";
+            texto += "Kebab wrap\n";
         }
 
         texto += "Patty: " + currentOrder.requiredCookState + "\n" + "Ingredients:\n";
+
         foreach (var ing in currentOrder.requiredIngredients)
         {
             if (ing == IngredientType.TopBread) continue;
@@ -309,20 +317,16 @@ public class NPCClient : MonoBehaviour
         if (currentOrder.requiresDrink && bebidaRecibida == null) return;
 
         esperando = false;
-        bool pedidoCorrecto = true;
 
-        pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
-
-        if (isLevel3 && kebabRecibido == null)
-        {
-            pedidoCorrecto = false;
-        }
+        // Validamos la estructura de la hamburguesa
+        bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
        
         if (currentOrder.requiresDrink && bebidaRecibida != null)
-        {
             if (bebidaRecibida.type != currentOrder.requiredDrink)
                 pedidoCorrecto = false;
-        }
+        
+        if (isLevel3 && kebabRecibido == null)
+            pedidoCorrecto = false;
         
         if (pedidoCorrecto)
         {
@@ -330,19 +334,20 @@ public class NPCClient : MonoBehaviour
 
             if (estadoActual == EstadoPaciencia.Tranquilo)
             {
-                sonidoSatisfecho.Play();
+                // Tus AudioSources originales vuelven a sonar aquí
+                if (sonidoSatisfecho != null) sonidoSatisfecho.Play();
                 ScoreController.instance.UpdateScore(puntosSatisfecho);
             }
             else
             {
-                sonidoOk.Play();
+                if (sonidoOk != null) sonidoOk.Play();
                 ScoreController.instance.UpdateScore(puntosOk);
             }
         }
         else
         {
             Destroy(GetComponent<BoxCollider>());
-            sonidoIncorrecto.Play();
+            if (sonidoIncorrecto != null) sonidoIncorrecto.Play();
             ScoreController.instance.UpdateScore(puntosIncorrecto);
         }
 
@@ -376,6 +381,7 @@ public class NPCClient : MonoBehaviour
     {
         esperando = false;
         anim.SetBool("isOrdering", false);
+        
         yield return new WaitForSeconds(1f);
 
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
@@ -389,15 +395,40 @@ public class NPCClient : MonoBehaviour
         slotReservado = false;
         QueueManager.instance.ActualizarCola();
         
-        GameObject humo = Instantiate(efectoHumo, anim.transform.position, Quaternion.identity);
+        GameObject humo = Instantiate(
+            efectoHumo,
+            anim.transform.position,
+            Quaternion.identity
+        );
+
         Destroy(humo, 0.5f);
 
         if (takeOrder)
         {
-            if (burgerRecibida != null) Destroy(burgerRecibida.gameObject);
-            if (friesRecibidas != null) Destroy(friesRecibidas);
-            if (bebidaRecibida != null) Destroy(bebidaRecibida.gameObject);
-            if (kebabRecibido != null) Destroy(kebabRecibido);
+            if (kebabRecibido != null)
+            {
+                Valve.VR.InteractionSystem.Hand hand = kebabRecibido.GetComponentInParent<Valve.VR.InteractionSystem.Hand>();
+                if (hand != null)
+                {
+                    hand.DetachObject(kebabRecibido);
+                    hand.HoverLock(null);
+                }
+                kebabRecibido.SetActive(false); 
+            }
+
+            if (burgerRecibida != null)
+                Destroy(burgerRecibida.gameObject);
+
+            if (friesRecibidas != null)
+                Destroy(friesRecibidas);
+            
+            if (bebidaRecibida != null)
+                Destroy(bebidaRecibida.gameObject);
+
+            yield return new WaitForFixedUpdate();
+
+            if (kebabRecibido != null)
+                Destroy(kebabRecibido);
         }
 
         if (barraPaciencia != null)
@@ -408,6 +439,12 @@ public class NPCClient : MonoBehaviour
         Destroy(gameObject);
     }
 
+    IEnumerator ActualizarColaDelayed()
+    {
+        yield return new WaitForSeconds(0.1f);
+        QueueManager.instance.ActualizarCola();
+    }
+
     void EvaluarPaciencia()
     {
         if (!esperando) return;
@@ -415,11 +452,17 @@ public class NPCClient : MonoBehaviour
         float porcentaje = pacienciaActual / pacienciaMax;
 
         if (pacienciaActual <= 0f)
+        {
             CambiarEstado(EstadoPaciencia.Harto);
+        }
         else if (porcentaje <= 0.25f)
+        {
             CambiarEstado(EstadoPaciencia.Desesperado);
+        }
         else
+        {
             CambiarEstado(EstadoPaciencia.Tranquilo);
+        }
     }
 
     void CambiarEstado(EstadoPaciencia nuevoEstado)
@@ -441,6 +484,7 @@ public class NPCClient : MonoBehaviour
 
             case EstadoPaciencia.Harto:
                 Debug.Log("Im fed up of waiting");
+
                 esperando = false;
                 ScoreController.instance.UpdateScore(puntosTimeout);
                 StartCoroutine(Irse(false));
@@ -450,7 +494,8 @@ public class NPCClient : MonoBehaviour
 
     public void IntentarIrABarra()
     {
-        if (slotReservado || yendoABarra) return;
+        if (slotReservado || yendoABarra)
+            return;
 
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
         int slot = ui.ReservarSlot();

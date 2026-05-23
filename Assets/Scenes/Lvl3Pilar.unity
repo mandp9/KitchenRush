@@ -205,7 +205,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
-      value: 35
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: bandejas.Array.size
@@ -4043,7 +4043,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
-      value: 25
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: bandejas.Array.size
