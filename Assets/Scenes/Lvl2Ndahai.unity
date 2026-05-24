@@ -196,6 +196,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1042425712}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
+      propertyPath: isLevel2
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
       value: 50
       objectReference: {fileID: 0}
@@ -3829,6 +3833,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1505302078}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
+      propertyPath: isLevel2
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
       value: 80
       objectReference: {fileID: 0}
@@ -3984,6 +3992,10 @@ PrefabInstance:
       propertyPath: destino
       value: 
       objectReference: {fileID: 1042425712}
+    - target: {fileID: 5137487099690713490, guid: e6ece62bcea3e7a4e940d1429ec79bd1, type: 3}
+      propertyPath: isLevel2
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5137487099690713490, guid: e6ece62bcea3e7a4e940d1429ec79bd1, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -7941,6 +7953,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1208792851}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
+      propertyPath: isLevel2
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: pacienciaMax
       value: 60
       objectReference: {fileID: 0}
@@ -8936,6 +8952,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 837400867}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
+      propertyPath: isLevel2
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: pacienciaMax
       value: 60
       objectReference: {fileID: 0}
@@ -9321,6 +9341,10 @@ PrefabInstance:
       propertyPath: destino
       value: 
       objectReference: {fileID: 1505302078}
+    - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
+      propertyPath: isLevel2
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: delayAntesDeIr
       value: 70
@@ -10774,6 +10798,10 @@ PrefabInstance:
       propertyPath: destino
       value: 
       objectReference: {fileID: 1505302078}
+    - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
+      propertyPath: isLevel2
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7717382841565024561, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
       propertyPath: bandejas.Array.size
       value: 3
