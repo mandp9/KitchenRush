@@ -32,12 +32,11 @@ public class MenuController : MonoBehaviour
         nivelActual++;
         if (nivelActual >= niveles.Length)
         {
-            nivelActual = 0; // Regresa al primer nivel si llega al final
+            nivelActual = 0; 
         }
         ActualizarInterfaz();
     }
 
-    // Cambiar al nivel anterior
     public void AnteriorNivel()
     {
         nivelActual--;
@@ -48,7 +47,6 @@ public class MenuController : MonoBehaviour
         ActualizarInterfaz();
     }
 
-    // Actualiza los textos en la pantalla
     void ActualizarInterfaz()
     {
         if (niveles.Length > 0)
@@ -58,7 +56,6 @@ public class MenuController : MonoBehaviour
         }
     }
 
-    // Cargar la escena seleccionada
     public void JugarNivel()
     {
         if (niveles.Length > 0)
