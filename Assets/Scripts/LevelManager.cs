@@ -31,6 +31,16 @@ public class LevelManager : MonoBehaviour
 
     IEnumerator WaitAndEndLevel()
     {
+        ScoreController scoreCtrl = FindObjectOfType<ScoreController>();
+        if (scoreCtrl != null)
+        {
+            AudioSource bgmSource = scoreCtrl.GetComponent<AudioSource>();
+            if (bgmSource != null)
+            {
+                bgmSource.Stop(); 
+            }
+        }
+
         if (levelCompletedAudio != null)
         {
             levelCompletedAudio.Play();
