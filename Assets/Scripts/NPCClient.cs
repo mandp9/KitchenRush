@@ -55,7 +55,7 @@ public class NPCClient : MonoBehaviour
     private GameObject friesRecibidas = null;
     private Drink bebidaRecibida = null;
     
-    // --- NUEVO: Elemento recibido para Nivel 3 ---
+    // --- Elementos recibidos para Niveles Superiores ---
     private GameObject kebabRecibido = null;
     private PizzaController pizzaRecibida = null;
 
@@ -191,18 +191,16 @@ public class NPCClient : MonoBehaviour
     {
         var list = new List<PizzaController.IngredientQuantity>();
 
-        // Mozarella siempre, cantidad 1
         list.Add(new PizzaController.IngredientQuantity
         {
             type = IngredientType.Mozarella,
             count = 1
         });
 
-        // Toppings adicionales (índices 6-9), entre 0 y 3 unidades de cada uno
         bool anyExtra = false;
         for (int i = 6; i <= 9; i++)
         {
-            int count = Random.Range(0, 4); // 0, 1, 2 o 3
+            int count = Random.Range(0, 4); 
             if (count > 0)
             {
                 list.Add(new PizzaController.IngredientQuantity
@@ -214,7 +212,6 @@ public class NPCClient : MonoBehaviour
             }
         }
 
-        // Garantizar al menos un topping extra además de la mozarella
         if (!anyExtra)
         {
             int randomTopping = Random.Range(7, 11);
@@ -237,10 +234,9 @@ public class NPCClient : MonoBehaviour
 
         if (isLevel3)
         {
-            // Nivel 3: kebab siempre + burger y/o pizza (misma lógica que nivel 2)
             newOrder.requiredKebab = true;
 
-            int foodChoice = Random.Range(0, 3); // 0 = solo burger, 1 = solo pizza, 2 = ambos
+            int foodChoice = Random.Range(0, 3); 
             newOrder.requiresBurger = foodChoice != 1;
             newOrder.requiresPizza = foodChoice != 0;
 
@@ -260,19 +256,17 @@ public class NPCClient : MonoBehaviour
                 newOrder.requiredIngredients.Sort();
             }
 
-            // --- NUEVO: Generar pedido de pizza si corresponde ---
             if (newOrder.requiresPizza)
             {
-                newOrder.requiredPizzaCookState = PizzaCookState.Cooked; // Cooked o Burnt
+                newOrder.requiredPizzaCookState = PizzaCookState.Cooked; 
                 newOrder.requiredPizzaIngredients = GeneratePizzaIngredients();
             }
         }
         else if (isLevel2)
         {
-            // --- NUEVO: Nivel 2: burger y/o pizza ---
             newOrder.requiredKebab = false;
 
-            int foodChoice = Random.Range(0, 3); // 0 = solo burger, 1 = solo pizza, 2 = ambos
+            int foodChoice = Random.Range(0, 3); 
             newOrder.requiresBurger = foodChoice != 1;
             newOrder.requiresPizza = foodChoice != 0;
 
@@ -294,13 +288,12 @@ public class NPCClient : MonoBehaviour
 
             if (newOrder.requiresPizza)
             {
-                newOrder.requiredPizzaCookState = PizzaCookState.Cooked; // Cooked o Burnt
+                newOrder.requiredPizzaCookState = PizzaCookState.Cooked;
                 newOrder.requiredPizzaIngredients = GeneratePizzaIngredients();
             }
         }
         else
         {
-            // Estado por defecto: solo hamburguesa
             newOrder.requiredKebab = false;
             newOrder.requiresBurger = true;
             newOrder.requiresPizza = false;
@@ -328,7 +321,6 @@ public class NPCClient : MonoBehaviour
         return newOrder;
     }
 
-
     void Pedir()
     {
         anim.SetBool("isOrdering", true);
@@ -350,40 +342,54 @@ public class NPCClient : MonoBehaviour
             Debug.LogError("OrderUIManager not found in scene!");
             return;
         }
-        string texto = "Order\n";
+
+        string texto = "";
 
         if (currentOrder.requiredKebab)
         {
-            texto += "Kebab wrap\n";
+            texto += "<color=#7BA677><size=110%>Kebab</size></color>\n";
         }
 
-        texto += "Patty: " + currentOrder.requiredCookState + "\n" + "Ingredients:\n";
-
-        foreach (var ing in currentOrder.requiredIngredients)
+        if (currentOrder.requiresBurger)
         {
-            if (ing == IngredientType.TopBread) continue;
-            texto += "- " + ing + "\n";
+            texto += "<color=#7BA677><size=110%>Burger</size></color> (" + currentOrder.requiredCookState.ToString().ToLower() + "):\n";
+            Dictionary<IngredientType, int> cuentaIngredientes = new Dictionary<IngredientType, int>();
+
+            foreach (var ing in currentOrder.requiredIngredients)
+            {
+                if (ing == IngredientType.TopBread || ing == IngredientType.BaseBread) continue;
+
+                if (cuentaIngredientes.ContainsKey(ing))
+                    cuentaIngredientes[ing]++;
+                else
+                    cuentaIngredientes[ing] = 1;
+            }
+
+            foreach (var par in cuentaIngredientes)
+            {
+                texto += par.Key.ToString().ToLower() + " x" + par.Value + "\n";
+            }
         }
 
         if (currentOrder.requiresPizza)
         {
-            texto += "Pizza\n";
-            texto += "Toppings:\n";
+            texto += "<color=#7BA677><size=110%>Pizza</size></color> toppings:\n";
             foreach (var topping in currentOrder.requiredPizzaIngredients)
             {
-                texto += topping.count + "x " + topping.type + "\n";
+                texto += topping.type.ToString().ToLower() + " x" + topping.count + "\n";
             }
         }
 
-        if (currentOrder.requiresFries)
-            texto += "Fries\n";
-
-        if (currentOrder.requiresDrink)
-            texto += "Drink: " + currentOrder.requiredDrink + "\n";
+        if (currentOrder.requiresFries || currentOrder.requiresDrink)
+        {
+            if (currentOrder.requiresFries)
+                texto += "<color=#7BA677><size=110%>Fries</size></color>\n";
+            if (currentOrder.requiresDrink)
+                texto += "<color=#7BA677><size=110%>Drink</size></color>: " + currentOrder.requiredDrink.ToString().ToLower() + "\n";
+        }
 
         ui.EscribirPedido(miSlotUI, texto);
     }
-
     public void RecibirPizza(PizzaController pizza)
     {
         pizzaRecibida = pizza;
@@ -425,15 +431,12 @@ public class NPCClient : MonoBehaviour
 
         if (isLevel3)
         {
-            // Kebab siempre requerido en nivel 3
             if (kebabRecibido == null) return;
-            // Burger y/o pizza según el pedido generado
             if (currentOrder.requiresBurger && burgerRecibida == null) return;
-            if (currentOrder.requiresPizza && pizzaRecibida == null) return; // --- NUEVO
+            if (currentOrder.requiresPizza && pizzaRecibida == null) return;
         }
         else if (isLevel2)
         {
-            // --- NUEVO: Nivel 2 comprueba burger y/o pizza según pedido ---
             if (currentOrder.requiresBurger && burgerRecibida == null) return;
             if (currentOrder.requiresPizza && pizzaRecibida == null) return;
         }
@@ -447,13 +450,11 @@ public class NPCClient : MonoBehaviour
 
         esperando = false;
 
-        // Validamos la estructura de la hamburguesa
         bool pedidoCorrecto = true;
 
         if (currentOrder.requiresBurger)
             pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
 
-        // --- NUEVO: Validar pizza ---
         if (currentOrder.requiresPizza && pedidoCorrecto)
             if (!EsPizzaCorrecta(pizzaRecibida))
                 pedidoCorrecto = false;
@@ -520,7 +521,6 @@ public class NPCClient : MonoBehaviour
         if (pizza.cookState != currentOrder.requiredPizzaCookState)
             return false;
 
-        // Verificar que cada ingrediente requerido tiene la cantidad exacta
         int totalRequiredIngredients = 0;
         foreach (var req in currentOrder.requiredPizzaIngredients)
         {
@@ -531,7 +531,6 @@ public class NPCClient : MonoBehaviour
             totalRequiredIngredients += req.count;
         }
 
-        // Verificar que no hay ingredientes extra
         if (pizza.currentIngredients.Count != totalRequiredIngredients)
             return false;
 
@@ -680,3 +679,4 @@ public class NPCClient : MonoBehaviour
         anim.SetBool("isWalking", true);
     }
 }
+
