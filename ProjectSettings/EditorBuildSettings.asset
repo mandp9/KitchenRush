@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/StartMenu.unity
     guid: a67c96062c5fe61428b677551b2982e2
   - enabled: 0
@@ -20,9 +20,18 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Lvl3Pilar.unity
     guid: 8c5535afe122a0c4aa847e8511a1607a
-  - enabled: 0
-    path: Assets/Scenes/StartMenu 1.unity
+  - enabled: 1
+    path: Assets/Scenes/StartMenuFinal.unity
     guid: ba0b4dc0d349a044392797e0d432e8e4
+  - enabled: 1
+    path: Assets/Scenes/Lvl1Final.unity
+    guid: 032032d81593c284091181a57298f095
+  - enabled: 1
+    path: Assets/Scenes/Lvl2Final.unity
+    guid: 859d2b6c0ec856545ab5fd40947ca91a
+  - enabled: 1
+    path: Assets/Scenes/Lvl3Final.unity
+    guid: 18c7ad060822d9c47b91b51160ed6270
   m_configObjects:
     Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: b4194c2e6b7ab9246a7ebb89bd944390, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

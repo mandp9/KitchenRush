@@ -599,6 +599,11 @@ public class NPCClient : MonoBehaviour
             barraPaciencia.transform.parent.gameObject.SetActive(false);
         }
 
+        if (LevelManager.instance != null)
+        {
+            LevelManager.instance.RegisterCustomerFinished();
+        }
+
         Destroy(gameObject);
     }
 

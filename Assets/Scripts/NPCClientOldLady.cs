@@ -471,6 +471,11 @@ public class NPCClientOldLady : MonoBehaviour
                 Destroy(pizzaRecibida.gameObject);
         }
 
+        if (LevelManager.instance != null)
+        {
+            LevelManager.instance.RegisterCustomerFinished();
+        }
+
         Destroy(gameObject);
     }
 
