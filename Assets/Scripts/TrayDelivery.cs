@@ -64,6 +64,18 @@ public class TrayDelivery : MonoBehaviour
             }
             return;
         }
+
+        PizzaController pizza = other.GetComponentInParent<PizzaController>()
+                            ?? other.GetComponent<PizzaController>();
+
+        if (pizza != null)
+        {
+            if (npcActual is NPCClient npcPizza)
+            {
+                npcPizza.RecibirPizza(pizza);
+            }
+            return;
+        }
     }
 
     public void LimpiarBandeja()

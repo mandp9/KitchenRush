@@ -56,7 +56,8 @@ public class NPCClient : MonoBehaviour
     private Drink bebidaRecibida = null;
     
     // --- NUEVO: Elemento recibido para Nivel 3 ---
-    private GameObject kebabRecibido = null; 
+    private GameObject kebabRecibido = null;
+    private PizzaController pizzaRecibida = null;
 
     [Header("Efectos")]
     public GameObject efectoHumo;
@@ -77,6 +78,7 @@ public class NPCClient : MonoBehaviour
     private float tiempoParpadeo = 0f;
 
     [Header("Level Configuration")]
+    public bool isLevel2 = false;
     public bool isLevel3 = false; 
 
     enum EstadoPaciencia
@@ -185,30 +187,124 @@ public class NPCClient : MonoBehaviour
         }
     }
 
+    private List<PizzaController.IngredientQuantity> GeneratePizzaIngredients()
+    {
+        var list = new List<PizzaController.IngredientQuantity>();
+
+        // Mozarella siempre, cantidad 1
+        list.Add(new PizzaController.IngredientQuantity
+        {
+            type = IngredientType.Mozarella,
+            count = 1
+        });
+
+        // Toppings adicionales (índices 6-9), entre 0 y 3 unidades de cada uno
+        bool anyExtra = false;
+        for (int i = 6; i <= 9; i++)
+        {
+            int count = Random.Range(0, 4); // 0, 1, 2 o 3
+            if (count > 0)
+            {
+                list.Add(new PizzaController.IngredientQuantity
+                {
+                    type = (IngredientType)i,
+                    count = count
+                });
+                anyExtra = true;
+            }
+        }
+
+        // Garantizar al menos un topping extra además de la mozarella
+        if (!anyExtra)
+        {
+            int randomTopping = Random.Range(7, 11);
+            list.Add(new PizzaController.IngredientQuantity
+            {
+                type = (IngredientType)randomTopping,
+                count = Random.Range(1, 4)
+            });
+        }
+
+        return list;
+    }
+
     private Order GenerateOrder()
     {
         Order newOrder = new();
 
+        newOrder.requiredIngredients = new List<IngredientType>();
+        newOrder.requiredPizzaIngredients = new List<PizzaController.IngredientQuantity>();
+
         if (isLevel3)
         {
-            newOrder.requiredKebab = true; 
+            // Nivel 3: kebab siempre + burger y/o pizza (misma lógica que nivel 2)
+            newOrder.requiredKebab = true;
 
-            int ingredientCount = Random.Range(2, 6);
-            newOrder.requiredCookState = (CookState)Random.Range(1, 3);
-            newOrder.requiredIngredients = new List<IngredientType>()
+            int foodChoice = Random.Range(0, 3); // 0 = solo burger, 1 = solo pizza, 2 = ambos
+            newOrder.requiresBurger = foodChoice != 1;
+            newOrder.requiresPizza = foodChoice != 0;
+
+            if (newOrder.requiresBurger)
             {
-                IngredientType.TopBread,
-                IngredientType.Meat
-            };
+                int ingredientCount = Random.Range(2, 6);
+                newOrder.requiredCookState = (CookState)Random.Range(1, 3);
+                newOrder.requiredIngredients = new List<IngredientType>()
+                {
+                    IngredientType.TopBread,
+                    IngredientType.Meat
+                };
 
-            for (int i = 2; i < ingredientCount; i++)
-                newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
+                for (int i = 2; i < ingredientCount; i++)
+                    newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
 
-            newOrder.requiredIngredients.Sort();
+                newOrder.requiredIngredients.Sort();
+            }
+
+            // --- NUEVO: Generar pedido de pizza si corresponde ---
+            if (newOrder.requiresPizza)
+            {
+                newOrder.requiredPizzaCookState = PizzaCookState.Cooked; // Cooked o Burnt
+                newOrder.requiredPizzaIngredients = GeneratePizzaIngredients();
+            }
+        }
+        else if (isLevel2)
+        {
+            // --- NUEVO: Nivel 2: burger y/o pizza ---
+            newOrder.requiredKebab = false;
+
+            int foodChoice = Random.Range(0, 3); // 0 = solo burger, 1 = solo pizza, 2 = ambos
+            newOrder.requiresBurger = foodChoice != 1;
+            newOrder.requiresPizza = foodChoice != 0;
+
+            if (newOrder.requiresBurger)
+            {
+                int ingredientCount = Random.Range(2, 6);
+                newOrder.requiredCookState = (CookState)Random.Range(1, 3);
+                newOrder.requiredIngredients = new List<IngredientType>()
+                {
+                    IngredientType.TopBread,
+                    IngredientType.Meat
+                };
+
+                for (int i = 2; i < ingredientCount; i++)
+                    newOrder.requiredIngredients.Add((IngredientType)Random.Range(0, 5));
+
+                newOrder.requiredIngredients.Sort();
+            }
+
+            if (newOrder.requiresPizza)
+            {
+                newOrder.requiredPizzaCookState = PizzaCookState.Cooked; // Cooked o Burnt
+                newOrder.requiredPizzaIngredients = GeneratePizzaIngredients();
+            }
         }
         else
         {
+            // Estado por defecto: solo hamburguesa
             newOrder.requiredKebab = false;
+            newOrder.requiresBurger = true;
+            newOrder.requiresPizza = false;
+
             int ingredientCount = Random.Range(2, 6);
             newOrder.requiredCookState = (CookState)Random.Range(1, 3);
             newOrder.requiredIngredients = new List<IngredientType>()
@@ -232,6 +328,7 @@ public class NPCClient : MonoBehaviour
         return newOrder;
     }
 
+
     void Pedir()
     {
         anim.SetBool("isOrdering", true);
@@ -248,6 +345,11 @@ public class NPCClient : MonoBehaviour
         esperando = true;
 
         OrderUIManager ui = FindObjectOfType<OrderUIManager>();
+        if (ui == null)
+        {
+            Debug.LogError("OrderUIManager not found in scene!");
+            return;
+        }
         string texto = "Order\n";
 
         if (currentOrder.requiredKebab)
@@ -263,6 +365,16 @@ public class NPCClient : MonoBehaviour
             texto += "- " + ing + "\n";
         }
 
+        if (currentOrder.requiresPizza)
+        {
+            texto += "Pizza\n";
+            texto += "Toppings:\n";
+            foreach (var topping in currentOrder.requiredPizzaIngredients)
+            {
+                texto += topping.count + "x " + topping.type + "\n";
+            }
+        }
+
         if (currentOrder.requiresFries)
             texto += "Fries\n";
 
@@ -270,6 +382,13 @@ public class NPCClient : MonoBehaviour
             texto += "Drink: " + currentOrder.requiredDrink + "\n";
 
         ui.EscribirPedido(miSlotUI, texto);
+    }
+
+    public void RecibirPizza(PizzaController pizza)
+    {
+        pizzaRecibida = pizza;
+        Debug.Log("Pizza recibida");
+        ComprobarPedidoCompleto();
     }
 
     public void RecibirBurger(BurgerController burger)
@@ -306,7 +425,17 @@ public class NPCClient : MonoBehaviour
 
         if (isLevel3)
         {
-            if (kebabRecibido == null || burgerRecibida == null) return;
+            // Kebab siempre requerido en nivel 3
+            if (kebabRecibido == null) return;
+            // Burger y/o pizza según el pedido generado
+            if (currentOrder.requiresBurger && burgerRecibida == null) return;
+            if (currentOrder.requiresPizza && pizzaRecibida == null) return; // --- NUEVO
+        }
+        else if (isLevel2)
+        {
+            // --- NUEVO: Nivel 2 comprueba burger y/o pizza según pedido ---
+            if (currentOrder.requiresBurger && burgerRecibida == null) return;
+            if (currentOrder.requiresPizza && pizzaRecibida == null) return;
         }
         else
         {
@@ -319,22 +448,29 @@ public class NPCClient : MonoBehaviour
         esperando = false;
 
         // Validamos la estructura de la hamburguesa
-        bool pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
-       
+        bool pedidoCorrecto = true;
+
+        if (currentOrder.requiresBurger)
+            pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
+
+        // --- NUEVO: Validar pizza ---
+        if (currentOrder.requiresPizza && pedidoCorrecto)
+            if (!EsPizzaCorrecta(pizzaRecibida))
+                pedidoCorrecto = false;
+
         if (currentOrder.requiresDrink && bebidaRecibida != null)
             if (bebidaRecibida.type != currentOrder.requiredDrink)
                 pedidoCorrecto = false;
-        
+
         if (isLevel3 && kebabRecibido == null)
             pedidoCorrecto = false;
-        
+
         if (pedidoCorrecto)
         {
             Destroy(GetComponent<BoxCollider>());
 
             if (estadoActual == EstadoPaciencia.Tranquilo)
             {
-                // Tus AudioSources originales vuelven a sonar aquí
                 if (sonidoSatisfecho != null) sonidoSatisfecho.Play();
                 ScoreController.instance.UpdateScore(puntosSatisfecho);
             }
@@ -373,6 +509,31 @@ public class NPCClient : MonoBehaviour
         }
 
         if (orderIngredients.Count > 0) return false;
+
+        return true;
+    }
+
+    bool EsPizzaCorrecta(PizzaController pizza)
+    {
+        if (pizza == null) return false;
+
+        if (pizza.cookState != currentOrder.requiredPizzaCookState)
+            return false;
+
+        // Verificar que cada ingrediente requerido tiene la cantidad exacta
+        int totalRequiredIngredients = 0;
+        foreach (var req in currentOrder.requiredPizzaIngredients)
+        {
+            int actualCount = pizza.currentIngredients.FindAll(x => x == req.type).Count;
+            if (actualCount != req.count)
+                return false;
+
+            totalRequiredIngredients += req.count;
+        }
+
+        // Verificar que no hay ingredientes extra
+        if (pizza.currentIngredients.Count != totalRequiredIngredients)
+            return false;
 
         return true;
     }
@@ -424,6 +585,9 @@ public class NPCClient : MonoBehaviour
             
             if (bebidaRecibida != null)
                 Destroy(bebidaRecibida.gameObject);
+
+            if (pizzaRecibida != null)
+                Destroy(pizzaRecibida.gameObject);
 
             yield return new WaitForFixedUpdate();
 

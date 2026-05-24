@@ -52,7 +52,15 @@ public class PizzaController : MonoBehaviour
 
         if (ingredient != null && !ingredient.isPlaced)
         {
-            SnapIngredient(ingredient);
+            if(ingredient.type == IngredientType.Mozarella ||
+                ingredient.type == IngredientType.Pepperoni ||
+                ingredient.type == IngredientType.Mushroom ||
+                ingredient.type == IngredientType.Olive ||
+                ingredient.type == IngredientType.Ham)
+            {
+
+                SnapIngredient(ingredient);
+            }
         }
     }
 

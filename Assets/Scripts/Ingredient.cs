@@ -7,12 +7,12 @@ public enum IngredientType
     Lettuce,  // 2
     Onion,    // 3
     Cheese,   // 4
-    PizzaCrust,
-    Pepperoni,
-    Mushroom,
-    Olive,
-    Ham,
-    Mozarella,
+    PizzaCrust, //5
+    Pepperoni, //6
+    Mushroom, // 7
+    Olive, //8
+    Ham, // 9
+    Mozarella, // 10
     BaseBread = 99,
     TopBread  = 100,
     // put unimplemented ingredients here

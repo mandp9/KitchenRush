@@ -2604,7 +2604,7 @@ PrefabInstance:
       addedObject: {fileID: 1946818255}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: f9062f77427eedb4189fe4d3b1989959, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1554167440}
+      addedObject: {fileID: 2010073756}
     - targetCorrespondingSourceObject: {fileID: -8026651692572346742, guid: f9062f77427eedb4189fe4d3b1989959, type: 3}
       insertIndex: -1
       addedObject: {fileID: 211647245}
@@ -5818,7 +5818,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientPrefab: {fileID: 2484096351442736920, guid: 23f7f0ab0756fba4dbc1563c90104e4e, type: 3}
   spawnPoint: {fileID: 1279031482}
---- !u!1001 &1287798760
+--- !u!1001 &1279409421
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -5868,7 +5868,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9008059736580686263, guid: ca84d6948feb2c7488ec119b8879a8fe, type: 3}
       propertyPath: m_Name
-      value: Oven
+      value: Oven (1)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6629,7 +6629,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: e28b12d247529284e959d0524f4711ae, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.523
+      value: -0.411
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e28b12d247529284e959d0524f4711ae, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6637,7 +6637,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e28b12d247529284e959d0524f4711ae, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.394
+      value: 2.305
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e28b12d247529284e959d0524f4711ae, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6988,11 +6988,6 @@ Transform:
 NavMeshAgent:
   m_CorrespondingSourceObject: {fileID: 5866764382099143014, guid: 10b754597e4b4be41a1ccc28ef8c1920, type: 3}
   m_PrefabInstance: {fileID: 16723188}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1554167440 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2142066496893232954, guid: ca84d6948feb2c7488ec119b8879a8fe, type: 3}
-  m_PrefabInstance: {fileID: 1287798760}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1591169712
 PrefabInstance:
@@ -9467,6 +9462,10 @@ MonoBehaviour:
     requiresDrink: 0
     requiredDrink: 0
     requiredKebab: 0
+    requiresBurger: 0
+    requiresPizza: 0
+    requiredPizzaCookState: 0
+    requiredPizzaIngredients: []
   efectoHumo: {fileID: 104829970813648393, guid: d3015b7eea383f64d8b81f965cc466e7, type: 3}
   sonidoSatisfecho: {fileID: 1988652035}
   sonidoOk: {fileID: 1988652034}
@@ -9839,6 +9838,11 @@ BoxCollider:
 Transform:
   m_CorrespondingSourceObject: {fileID: 6258001339224942605, guid: 597941964438caa40bebc960cbbdc9c7, type: 3}
   m_PrefabInstance: {fileID: 1591169712}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2010073756 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2142066496893232954, guid: ca84d6948feb2c7488ec119b8879a8fe, type: 3}
+  m_PrefabInstance: {fileID: 1279409421}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2017033698 stripped
 Transform:
@@ -10584,6 +10588,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02620e368d3883a488640c00e1bb6194, type: 3}
+--- !u!1001 &4354801845727550247
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.59465945
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.0030384
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.4326313
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4315882671922838356, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8125097232918998033, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
+      propertyPath: m_Name
+      value: PizzaMakingTable
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3b9b87e508bbb204ab207d8b0fe9a3d6, type: 3}
 --- !u!1001 &5715005496495671565
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10833,3 +10894,4 @@ SceneRoots:
   - {fileID: 1127903105}
   - {fileID: 1884243330}
   - {fileID: 1260476887}
+  - {fileID: 4354801845727550247}

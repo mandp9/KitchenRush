@@ -10,5 +10,9 @@ public class Order
     public bool requiresDrink; 
     public DrinkType requiredDrink;
     public bool requiredKebab;
+    public bool requiresBurger;
 
+    public bool requiresPizza;
+    public PizzaCookState requiredPizzaCookState;
+    public List<PizzaController.IngredientQuantity> requiredPizzaIngredients;
 }
