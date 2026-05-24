@@ -21,14 +21,20 @@ public class MenuController : MonoBehaviour
     public TextMeshProUGUI txtHeader;
     public TextMeshProUGUI txtDescripcion;
 
+    [Header("Efectos de Sonido (UI)")]
+    public AudioSource sonidoSiguiente;     
+    public AudioSource sonidoAnterior;      
+    public AudioSource sonidoPlay;         
+
     void Start()
     {
         ActualizarInterfaz();
     }
 
-    // Cambiar al nivel siguiente
     public void SiguienteNivel()
     {
+        if (sonidoSiguiente != null) sonidoSiguiente.Play();
+
         nivelActual++;
         if (nivelActual >= niveles.Length)
         {
@@ -39,6 +45,8 @@ public class MenuController : MonoBehaviour
 
     public void AnteriorNivel()
     {
+        if (sonidoAnterior != null) sonidoAnterior.Play();
+
         nivelActual--;
         if (nivelActual < 0)
         {
@@ -60,6 +68,8 @@ public class MenuController : MonoBehaviour
     {
         if (niveles.Length > 0)
         {
+            if (sonidoPlay != null) sonidoPlay.Play();
+
             string escenaACargar = niveles[nivelActual].nombreEscena;
             if (!string.IsNullOrEmpty(escenaACargar))
             {
