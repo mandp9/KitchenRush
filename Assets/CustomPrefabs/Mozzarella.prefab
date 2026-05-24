@@ -72,6 +72,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mozzarella
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6bea71a0d88fa5e46be54dab36a9b02f, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -126,6 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 10
+  customRotationOffset: {x: 0, y: 0, z: 0}
   isPlaced: 0
 --- !u!114 &8097431127233741000
 MonoBehaviour:
