@@ -17,8 +17,10 @@ public class ScoreController : MonoBehaviour
     }
 
     public int score = 0;
+    public uint currentLevel = 0;
 
     [Header("Text fields")]
+    public TMP_Text levelText;
     public TMP_Text timeText;
     public TMP_Text scoreText;
     public TMP_Text gainText;
@@ -36,6 +38,7 @@ public class ScoreController : MonoBehaviour
 
     private void Start()
     {
+        levelText.text = "Level " + currentLevel;
         gainText.text = "";
         StartCoroutine(MusicPlayer());
     }

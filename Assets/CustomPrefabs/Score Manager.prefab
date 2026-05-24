@@ -289,6 +289,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   score: 0
+  currentLevel: 0
+  levelText: {fileID: 3720442913307272951}
   timeText: {fileID: 1078627582092136883}
   scoreText: {fileID: 4820595120872038229}
   gainText: {fileID: 904095291660118680}

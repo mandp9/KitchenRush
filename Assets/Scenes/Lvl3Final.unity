@@ -1032,6 +1032,18 @@ PrefabInstance:
       propertyPath: m_Volume
       value: 0.4
       objectReference: {fileID: 0}
+    - target: {fileID: 2514162286046874379, guid: 67c09bce9ad7ebe44a4db0af63a51adf, type: 3}
+      propertyPath: currentLevel
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2514162286046874379, guid: 67c09bce9ad7ebe44a4db0af63a51adf, type: 3}
+      propertyPath: 'musicClips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 8e5b30969f2f3b54ab1ddeeddebd6d12, type: 3}
+    - target: {fileID: 2514162286046874379, guid: 67c09bce9ad7ebe44a4db0af63a51adf, type: 3}
+      propertyPath: 'musicClips.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 74cb7ac5779b99641bfc20796b8b16ee, type: 3}
     - target: {fileID: 2918113812015004184, guid: 67c09bce9ad7ebe44a4db0af63a51adf, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
