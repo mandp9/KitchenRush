@@ -7369,7 +7369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   totalLevelCustomers: 8
-  delayBeforeEnd: 5
+  delayBeforeEnd: 3
   levelCompletedAudio: {fileID: 1653616889}
 --- !u!4 &1653616891
 Transform:
