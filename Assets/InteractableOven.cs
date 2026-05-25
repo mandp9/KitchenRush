@@ -70,7 +70,8 @@ public class InteractableOven : MonoBehaviour
 
     private void HandHoverUpdate(Hand hand)
     {
-        if (grabAction != null && grabAction.GetStateDown(hand.handType))
+        SteamVR_Input_Sources handType = SteamVR_Input_Sources.Any;
+        if (SteamVR_Input.GetStateDown("GrabPinch", handType))
         {
             ToggleDoor();
         }

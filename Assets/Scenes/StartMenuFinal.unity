@@ -7303,6 +7303,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6738662043551224530, guid: ca84d6948feb2c7488ec119b8879a8fe, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
     - target: {fileID: 9008059736580686263, guid: ca84d6948feb2c7488ec119b8879a8fe, type: 3}
       propertyPath: m_Name
       value: Oven (1)

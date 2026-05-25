@@ -594,6 +594,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 243526794115581929, guid: c5b831ba77c6dc4408c708a3ac264d59, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
     - target: {fileID: 6844363160530534717, guid: c5b831ba77c6dc4408c708a3ac264d59, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.589
@@ -7168,7 +7172,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: e9603e7a3938b4e47abbb7121bcbae61, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: e9603e7a3938b4e47abbb7121bcbae61, type: 3}
       propertyPath: m_Controller
@@ -7368,7 +7372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63b6d7464e53db545ab7feecfbfffaaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalLevelCustomers: 8
+  totalLevelCustomers: 7
   delayBeforeEnd: 3
   levelCompletedAudio: {fileID: 1653616889}
 --- !u!4 &1653616891
