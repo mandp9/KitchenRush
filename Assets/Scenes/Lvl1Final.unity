@@ -1928,7 +1928,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 3.2239265, y: 1.0610199, z: 290.87198, w: 285.42438}
+  m_margin: {x: 4.3167, y: 1.0610199, z: 290.87198, w: 285.42438}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -9542,6 +9542,7 @@ MonoBehaviour:
   barraPaciencia: {fileID: 934737244}
   umbralParpadeo: 0.3
   velocidadParpadeo: 5
+  isLevel1: 1
 --- !u!82 &1988652033
 AudioSource:
   m_ObjectHideFlags: 0
