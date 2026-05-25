@@ -60,6 +60,10 @@ public class NPCClientOldLady : MonoBehaviour
 
     private float tiempoParpadeo = 0f;
 
+    // --- NUEVO: Configuración para bloquear pizzas en el Nivel 1 ---
+    [Header("Level Configuration")]
+    public bool isLevel1 = false;
+
     enum EstadoPaciencia
     {
         Tranquilo,
@@ -192,9 +196,17 @@ public class NPCClientOldLady : MonoBehaviour
         newOrder.requiredIngredients = new List<IngredientType>();
         newOrder.requiredPizzaIngredients = new List<PizzaController.IngredientQuantity>();
 
-        int foodChoice = Random.Range(0, 2); 
-        newOrder.requiresBurger = (foodChoice == 0); 
-        newOrder.requiresPizza = (foodChoice == 1);  
+        if (isLevel1)
+        {
+            newOrder.requiresBurger = true;
+            newOrder.requiresPizza = false;
+        }
+        else
+        {
+            int foodChoice = Random.Range(0, 2); 
+            newOrder.requiresBurger = (foodChoice == 0); 
+            newOrder.requiresPizza = (foodChoice == 1);  
+        }
 
         if (newOrder.requiresBurger)
         {
@@ -347,7 +359,6 @@ public class NPCClientOldLady : MonoBehaviour
         if (currentOrder.requiresBurger)
             pedidoCorrecto = EsPedidoCorrecto(burgerRecibida);
 
-        // --- NUEVO: Validar pizza de la abuela ---
         if (currentOrder.requiresPizza && pedidoCorrecto)
             if (!EsPizzaCorrecta(pizzaRecibida))
                 pedidoCorrecto = false;
