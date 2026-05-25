@@ -43,10 +43,7 @@ public class BurgerController : MonoBehaviour
 
         foreach (GameObject ingredient in ingredientObjects)
         {
-            Destroy(ingredient.GetComponent<Throwable>());
-            Destroy(ingredient.GetComponent<Rigidbody>());
-            Destroy(ingredient.GetComponent<Interactable>());
-            ingredient.tag = "Untagged";
+            DisableVRPhysics(ingredient);
             ingredient.transform.parent = this.transform;
 
             // check patty cook states; all patties must be cooked to the same state
@@ -58,5 +55,30 @@ public class BurgerController : MonoBehaviour
             pattyCookState = cookStates[0];
 
         Destroy(this.GetComponent<BoxCollider>());
+    }
+
+    // yoinked from ndahai tyvm
+    private void DisableVRPhysics(GameObject obj)
+    {
+        Throwable throwable = obj.GetComponent<Throwable>();
+        if (throwable != null)
+        {
+            foreach (Hand hand in Object.FindObjectsOfType<Hand>())
+            {
+                if (hand.currentAttachedObject == obj)
+                {
+                    hand.DetachObject(obj);
+                }
+            }
+            Destroy(throwable);
+        }
+
+        if (obj.GetComponent<Interactable>() != null) Destroy(obj.GetComponent<Interactable>());
+        if (obj.GetComponent<Rigidbody>() != null) Destroy(obj.GetComponent<Rigidbody>());
+
+        Collider col = obj.GetComponent<Collider>();
+        if (col != null) col.isTrigger = true;
+
+        obj.tag = "Untagged";
     }
 }

@@ -73,7 +73,7 @@ public class MenuController : MonoBehaviour
             string escenaACargar = niveles[nivelActual].nombreEscena;
             if (!string.IsNullOrEmpty(escenaACargar))
             {
-                SceneManager.LoadScene(escenaACargar);
+                SceneManager.LoadScene(escenaACargar, LoadSceneMode.Single);
             }
             else
             {

@@ -47,6 +47,6 @@ public class LevelManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(delayBeforeEnd);
-        SceneManager.LoadScene("StartMenuFinal"); 
+        SceneManager.LoadScene("StartMenuFinal", LoadSceneMode.Single); 
     }
 }
